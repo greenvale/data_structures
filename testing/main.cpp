@@ -1,20 +1,17 @@
 #include <iostream>
 
 #include <DynamicArray.hpp>
+#include <LinkedList.hpp>
 
 int main()
 {
-    DataStructLib::DynamicArray<float> myArray(2);
-
-    myArray.add(1.0f);
-    myArray.add(2.0f);
-    myArray.add(3.0f);
-    myArray.add(2.0f);
-
-    myArray.print();
+    float num1 = 1.0;
+    float num2 = 2.0;
     
-    DataStructLib::DynamicArray<unsigned int> indexOfSame = myArray.getValueIndexes(2.0f);
-
-    indexOfSame.print();
-    std::cout << indexOfSame.getLength() << std::endl;
+    DataStructLib::SingleNode<float> node1(num1);
+    DataStructLib::SingleNode<float> node2(num2);
+    
+    node1.setNextPtr(&node2);
+    
+    std::cout << node1.getValue() << std::endl;
 }
