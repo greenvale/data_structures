@@ -5,25 +5,23 @@
 
 namespace DataStructLib
 {
-    template <typename T>
+    template <class T>
     class DynamicArray
     {
     private:
-        T* array;
-        unsigned int length;
-        unsigned int arraySize;
-        unsigned int defaultArraySize = 16;
+        T* m_staticArray;
+        unsigned int m_length;
+        unsigned int m_staticArraySize;
+        unsigned int m_defaultStaticArraySize = 16;
+        
     public:
         // creates empty dynamic array
         DynamicArray();
 
-        // creates 
+        // creates empty dynamic array with a custom default array size
         DynamicArray(
-            const unsigned int& init_arraySize
+            const unsigned int& defaultStaticArraySize
         );
-
-        // get length
-        unsigned int getLength();
 
         // returns value at existing index
         T get(
@@ -49,168 +47,156 @@ namespace DataStructLib
         // clears all elements from the dynamic array
         void clear();
 
-        // gets indexes of elements in dynamic array with given value
-        void getIndex(
+        // gets indexes of elements in dynamic array with a given value
+        DynamicArray<unsigned int> getIndexes(
             const T& value
         );
+        
+        // get length
+        unsigned int getLength();
+       
+        // print values to output
+        void print();
+        
+        // reallocate static array (useful for changing static array size)
+        void reallocateStaticArray();
 
     };
 
     // =============================================================================
 
-    template <typename T>
+    template <class T>
     DynamicArray<T>::DynamicArray()
     {
-        // no array size provided, therefore set to default size
-        arraySize = defaultArraySize;
+        m_staticArraySize = m_defaultStaticArraySize; // no array size provided, therefore set to default size
+        m_staticArray = new T[m_staticArraySize]; // initialise static array
 
-        // initialise static array
-        array = new T[arraySize];
-
-        // set length to zero
-        length = 0;
+        m_length = 0; // set length to zero
     }
 
-    template <typename T>
+    template <class T>
     DynamicArray<T>::DynamicArray(
-        const unsigned int& init_defaultArraySize
+        const unsigned int& defaultStaticArraySize
     )
     {
-        // set array size
-        defaultArraySize = init_defaultArraySize;
+        m_defaultStaticArraySize = defaultStaticArraySize; // set array size
 
-        // no array size provided, therefore set to default size
-        arraySize = defaultArraySize;
+        m_staticArraySize = m_defaultStaticArraySize; // no array size provided, therefore set to default size
+        m_staticArray = new T[m_staticArraySize]; // initialise static array
 
-        // initialise static array
-        array = new T[arraySize];
-
-        // set length to zero
-        length = 0;
+        m_length = 0; // set length to zero as dynamic array is empty
     }
 
-    template <typename T>
-    unsigned int DynamicArray<T>::getLength()
-    {
-        return length;
-    }
-
-    template <typename T>
+    template <class T>
     T DynamicArray<T>::get(
         const unsigned int& index
     )
     {
-        // check index does not exceed dynamic array length
-        assert(index < length);
-
-        return array[index];
+        assert(index < m_length); // check index does not exceed dynamic array length
+        return m_staticArray[index];
     }
 
-    template <typename T>
+    template <class T>
     void DynamicArray<T>::set(
         const unsigned int& index, 
         const T& value
     )
     {
-        // check index does not exceed dynamic array length
-        assert(index < length);
-
-        array[index] = value;
+        assert(index < m_length); // check index does not exceed dynamic array length
+        m_staticArray[index] = value;
     }
 
-    template <typename T>
+    template <class T>
     void DynamicArray<T>::add(
         const T& value
     )
     {
-        // check if new length will exceed array size
-        if (length + 1 > arraySize)
+        if (m_length + 1 > m_staticArraySize) // check if static array needs to be made bigger
         {
-            // double array size
-            arraySize *= 2;
-
-            //std::cout << "Array size changed to be " << arraySize << std::endl;
-
-            // create new array
-            T* newArray = new T[arraySize];
-
-            // copy across existing values
-            for (int i = 0; i < length; ++i)
-            {
-                newArray[i] = array[i];
-            }
-
-            // change array to newArray with larger size
-            array = newArray;
+            m_staticArraySize *= 2;
+            reallocateStaticArray(); // double the static array size
         }
 
-        // increase length of dynamic array
-        length++;
-
-        array[length - 1] = value;
+        m_length++; // increase length of dynamic array and add value
+        m_staticArray[m_length - 1] = value;
     }
 
-    template <typename T>
+    template <class T>
     void DynamicArray<T>::remove(
         const unsigned int& index
     )
     {
-        // check index does not exceed dynamic array length
-        assert(index < length);
+        assert(index < m_length); // check index does not exceed dynamic array length
 
-        // shift RH values to the left by one, thereby removing our value
-        for (int i = index + 1; i < length; ++i)
+        for (int i = index + 1; i < m_length; ++i) 
         {
-            array[i - 1] = array[i];
+            m_staticArray[i - 1] = m_staticArray[i]; // shift RH values to left by one, thereby removing target value
         }
         
-        // set end value to be nil
-        array[length - 1] = NULL;
-
-        // reduce length
-        length--;
+        m_staticArray[m_length - 1] = 0; // set end value to be nil and reduce length
+        m_length--;
 
         // check if array can be downsized -> length <= arraySize / 2
         // only if arraySize is greater than defaultArraySize
-        if ((length <= arraySize / 2) && (arraySize > defaultArraySize))
+        if ((m_length <= m_staticArraySize / 2) && (m_staticArraySize > m_defaultStaticArraySize))
         {
-            // half array size
-            arraySize /= 2;
-
-            //std::cout << "Array size changed to be " << arraySize << std::endl;
-
-            // create new array
-            T* newArray = new T[arraySize];
-
-            // copy across existing values
-            for (int i = 0; i < length; ++i)
-            {
-                newArray[i] = array[i];
-            }
-
-            // change array to newArray with larger size
-            array = newArray;
+            m_staticArraySize /= 2;
+            reallocateStaticArray();
         }
     }
-
-    template <typename T>
-    void DynamicArray<T>::clear()
+    
+    template <class T>
+    void DynamicArray<T>::reallocateStaticArray()
     {
-        // delete array and its contents
-        delete[] array;
-
-        // reset array size to default size
-        arraySize = defaultArraySize;
-
-        // create new empty array
-        array = new T[arraySize];
+        T* temp_staticArray = new T[m_staticArraySize]; // create temp static array
+        
+        for (int i = 0; i < m_length; ++i)
+        {
+            temp_staticArray[i] = m_staticArray[i]; // copy values
+        }
+        
+        delete[] m_staticArray; // clear contents of static array then set it to temp static array
+        m_staticArray = temp_staticArray;
     }
 
-    template <typename T>
-    void DynamicArray<T>::getIndex(
+    template <class T>
+    void DynamicArray<T>::clear()
+    {
+        delete[] m_staticArray;
+        m_staticArraySize = m_defaultStaticArraySize; // reset dynamic array length to default length
+        m_staticArray = new T[m_staticArraySize];
+    }
+
+    template <class T>
+    DynamicArray<unsigned int> DynamicArray<T>::getIndexes(
         const T& value
     )
     {
+        DynamicArray<unsigned int> indexes; // create dynamic array to store indexes
         
+        for (unsigned int i = 0; i < m_length; ++i)
+        {
+            if (m_staticArray[i] == value)
+            {
+                indexes.add(i); // if element has same value, add its index to indexes array
+            }
+        }
+        
+        return indexes;
+    }
+    
+    template <class T>
+    unsigned int DynamicArray<T>::getLength()
+    {
+        return m_length;
+    }
+    
+    template <class T>
+    void DynamicArray<T>::print()
+    {
+        for (int i = 0; i < m_length; ++i)
+        {
+            std::cout << "(" << i << "): " << m_staticArray[i] << std::endl;
+        }
     }
 }
