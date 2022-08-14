@@ -15,7 +15,7 @@ namespace DataStructLib
         unsigned int m_defaultStaticArraySize = 16;
         
     public:
-        // creates empty dynamic array
+        // default ctor
         DynamicArray();
 
         // creates empty dynamic array with a custom default array size
@@ -23,10 +23,15 @@ namespace DataStructLib
             const unsigned int& defaultStaticArraySize
         );
 
+        // copy ctor
+        DynamicArray(
+            const DynamicArray&
+        );
+
         // returns value at existing index
         T get(
             const unsigned int& index
-        );
+        ) const;
 
         // changes value at existing index
         void set(
@@ -48,12 +53,17 @@ namespace DataStructLib
         void clear();
 
         // gets indexes of elements in dynamic array with a given value
-        DynamicArray<unsigned int> getIndexes(
+        DynamicArray<unsigned int> getValueIndexes(
+            const T& value
+        );
+        
+        // return true if array contains a certain value
+        bool contains(
             const T& value
         );
         
         // get length
-        unsigned int getLength();
+        unsigned int getLength() const;
        
         // print values to output
         void print();
@@ -86,11 +96,28 @@ namespace DataStructLib
 
         m_length = 0; // set length to zero as dynamic array is empty
     }
+    
+    template <class T>
+    DynamicArray<T>::DynamicArray(
+        const DynamicArray<T>& dynamicArray
+    )
+    {
+        m_staticArraySize = m_defaultStaticArraySize;
+        m_staticArray = new T[m_staticArraySize];
+        m_length = dynamicArray.getLength();
+        
+        for (unsigned int i = 0; i < dynamicArray.getLength(); ++i)
+        {
+            m_staticArray[i] = dynamicArray.get(i);
+        }
+        
+        std::cout << "Copy constructor called" << std::endl;
+    }
 
     template <class T>
     T DynamicArray<T>::get(
         const unsigned int& index
-    )
+    ) const
     {
         assert(index < m_length); // check index does not exceed dynamic array length
         return m_staticArray[index];
@@ -168,7 +195,7 @@ namespace DataStructLib
     }
 
     template <class T>
-    DynamicArray<unsigned int> DynamicArray<T>::getIndexes(
+    DynamicArray<unsigned int> DynamicArray<T>::getValueIndexes(
         const T& value
     )
     {
@@ -186,7 +213,17 @@ namespace DataStructLib
     }
     
     template <class T>
-    unsigned int DynamicArray<T>::getLength()
+    bool DynamicArray<T>::contains(
+        const T& value
+    )
+    {
+        DynamicArray<unsigned int> indexes = getValueIndexes(value); // get array of indexes
+        
+        return indexes.getLength() > 0;
+    }
+    
+    template <class T>
+    unsigned int DynamicArray<T>::getLength() const
     {
         return m_length;
     }

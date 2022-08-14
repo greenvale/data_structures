@@ -13,8 +13,8 @@ int main()
 
     myArray.print();
     
-    DataStructLib::DynamicArray<unsigned int> indexOfSame = myArray.getIndexes(2.0f);
+    DataStructLib::DynamicArray<unsigned int> indexOfSame = myArray.getValueIndexes(2.0f);
 
     indexOfSame.print();
-
+    std::cout << indexOfSame.getLength() << std::endl;
 }
