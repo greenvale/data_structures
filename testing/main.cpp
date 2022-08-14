@@ -14,4 +14,6 @@ int main()
     node1.setNextPtr(&node2);
     
     std::cout << node1.getValue() << std::endl;
+    std::cout << node1.getNextPtr() << std::endl;
+    std::cout << (*node1.getNextPtr()).getValue() << std::endl;
 }

@@ -11,13 +11,13 @@ namespace DataStructLib
     public:
         SingleNode();
         SingleNode(const T& value);
-        SingleNode(T* nextPtr);
-        SingleNode(const T& value, T* nextPtr);      
+        SingleNode(SingleNode* nextPtr);
+        SingleNode(const T& value, SingleNode* nextPtr);      
         
         T getValue() const;
         void setValue(const T& value);
         
-        T* getNextPtr() const;
+        SingleNode* getNextPtr() const;
         void setNextPtr(SingleNode* nextPtr);
     };
     
@@ -33,13 +33,13 @@ namespace DataStructLib
     }
     
     template <class T>
-    SingleNode<T>::SingleNode(T* nextPtr)
+    SingleNode<T>::SingleNode(SingleNode* nextPtr)
     {
         m_nextPtr = nextPtr;
     }
     
     template <class T>
-    SingleNode<T>::SingleNode(const T& value, T* nextPtr)
+    SingleNode<T>::SingleNode(const T& value, SingleNode* nextPtr)
     {
         m_value = value;
         m_nextPtr = nextPtr;
@@ -58,7 +58,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    T* SingleNode<T>::getNextPtr() const
+    SingleNode<T>* SingleNode<T>::getNextPtr() const
     {
         return m_nextPtr;
     }
