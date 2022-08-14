@@ -68,13 +68,15 @@ namespace DataStructLib
         // print values to output
         void print();
         
+    private:
         // reallocate static array (useful for changing static array size)
         void reallocateStaticArray();
 
     };
 
     // =============================================================================
-
+    // CTORS / DTORS
+    
     template <class T>
     DynamicArray<T>::DynamicArray()
     {
@@ -113,6 +115,9 @@ namespace DataStructLib
         
         std::cout << "Copy constructor called" << std::endl;
     }
+    
+    // =============================================================================
+    // GET FUNCTIONS
 
     template <class T>
     T DynamicArray<T>::get(
@@ -122,6 +127,15 @@ namespace DataStructLib
         assert(index < m_length); // check index does not exceed dynamic array length
         return m_staticArray[index];
     }
+    
+    template <class T>
+    unsigned int DynamicArray<T>::getLength() const
+    {
+        return m_length;
+    }
+    
+    // =============================================================================
+    // SET FUNCTIONS
 
     template <class T>
     void DynamicArray<T>::set(
@@ -173,26 +187,15 @@ namespace DataStructLib
     }
     
     template <class T>
-    void DynamicArray<T>::reallocateStaticArray()
-    {
-        T* temp_staticArray = new T[m_staticArraySize]; // create temp static array
-        
-        for (int i = 0; i < m_length; ++i)
-        {
-            temp_staticArray[i] = m_staticArray[i]; // copy values
-        }
-        
-        delete[] m_staticArray; // clear contents of static array then set it to temp static array
-        m_staticArray = temp_staticArray;
-    }
-
-    template <class T>
     void DynamicArray<T>::clear()
     {
         delete[] m_staticArray;
         m_staticArraySize = m_defaultStaticArraySize; // reset dynamic array length to default length
         m_staticArray = new T[m_staticArraySize];
     }
+    
+    // =============================================================================
+    // SEARCHING
 
     template <class T>
     DynamicArray<unsigned int> DynamicArray<T>::getValueIndexes(
@@ -222,11 +225,8 @@ namespace DataStructLib
         return indexes.getLength() > 0;
     }
     
-    template <class T>
-    unsigned int DynamicArray<T>::getLength() const
-    {
-        return m_length;
-    }
+    // =============================================================================
+    // PRINTING
     
     template <class T>
     void DynamicArray<T>::print()
@@ -236,4 +236,22 @@ namespace DataStructLib
             std::cout << "(" << i << "): " << m_staticArray[i] << std::endl;
         }
     }
+    
+    // =============================================================================
+    // INTERNAL FUNCTIONS
+    
+    template <class T>
+    void DynamicArray<T>::reallocateStaticArray()
+    {
+        T* temp_staticArray = new T[m_staticArraySize]; // create temp static array
+        
+        for (int i = 0; i < m_length; ++i)
+        {
+            temp_staticArray[i] = m_staticArray[i]; // copy values
+        }
+        
+        delete[] m_staticArray; // clear contents of static array then set it to temp static array
+        m_staticArray = temp_staticArray;
+    }
+
 }
