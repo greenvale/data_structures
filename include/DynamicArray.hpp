@@ -15,63 +15,30 @@ namespace DataStructLib
         unsigned int m_defaultStaticArraySize = 16;
         
     public:
-        // default ctor
         DynamicArray();
-
-        // creates empty dynamic array with a custom default array size
         DynamicArray(
             const unsigned int& defaultStaticArraySize
         );
-
-        // copy ctor
         DynamicArray(
             const DynamicArray&
         );
 
-        // returns value at existing index
-        T get(
-            const unsigned int& index
-        ) const;
-
-        // changes value at existing index
-        void set(
-            const unsigned int& index, 
-            const T& value
-        );
-
-        // adds value to the end of the array (creates new index and increases size if necessary)
-        void add(
-            const T& value
-        );
-
-        // removes value at existing index
-        void remove(
-            const unsigned int& index
-        );
-
-        // clears all elements from the dynamic array
+        T get(const unsigned int& index) const;
+        void set(const unsigned int& index, const T& value);
+        void add(const T& value);
+        void remove(const unsigned int& index);
         void clear();
 
-        // gets indexes of elements in dynamic array with a given value
-        DynamicArray<unsigned int> getValueIndexes(
-            const T& value
-        );
+        DynamicArray<unsigned int> getValueIndexes(const T& value);
+        bool contains(const T& value);
         
-        // return true if array contains a certain value
-        bool contains(
-            const T& value
-        );
-        
-        // get length
         unsigned int getLength() const;
        
-        // print values to output
         void print();
         
     private:
         // reallocate static array (useful for changing static array size)
         void reallocateStaticArray();
-
     };
 
     // =============================================================================

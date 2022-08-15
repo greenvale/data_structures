@@ -9,15 +9,14 @@ int main()
     float num2 = 2.0;
     float num3 = 3.0;
     
-    DataStructLib::DoubleNode<float> node1(num1);
-    DataStructLib::DoubleNode<float> node2(num2);
-    DataStructLib::DoubleNode<float> node3(num3);
+    DataStructLib::SingleNode<float> node1(num1);
+    DataStructLib::SingleNode<float> node2(num2);
+    DataStructLib::SingleNode<float> node3(num3);
     
-    node1.setNextPtr(&node2);
+    DataStructLib::SingleLinkList<float> list;
     
-    node2.setPrevPtr(&node1);
-    node2.setNextPtr(&node3);
+    list.insertHead(&node1);
+    list.insertHead(&node2);
     
-    node3.setPrevPtr(&node2);
-    
+    std::cout << (list.getHeadPtr())->getValue() << std::endl;
 }
