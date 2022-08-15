@@ -16,14 +16,11 @@ namespace DataStructLib
         
     public:
         DynamicArray();
-        DynamicArray(
-            const unsigned int& defaultStaticArraySize
-        );
-        DynamicArray(
-            const DynamicArray&
-        );
+        DynamicArray(const unsigned int& defaultStaticArraySize);
+        DynamicArray(const DynamicArray&);
 
         T get(const unsigned int& index) const;
+        T* getPtr(const unsigned int& index) const;
         void set(const unsigned int& index, const T& value);
         void add(const T& value);
         void remove(const unsigned int& index);
@@ -93,6 +90,13 @@ namespace DataStructLib
     {
         assert(index < m_length); // check index does not exceed dynamic array length
         return m_staticArray[index];
+    }
+    
+    template <class T>
+    T* DynamicArray<T>::getPtr(const unsigned int& index) const
+    {
+        assert(index < m_length);
+        return &(m_staticArray[index]);
     }
     
     template <class T>

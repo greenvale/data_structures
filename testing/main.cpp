@@ -5,18 +5,36 @@
 
 int main()
 {
-    float num1 = 1.0;
-    float num2 = 2.0;
-    float num3 = 3.0;
+    DataStructLib::DynamicArray<DataStructLib::SingleNode<float>> nodes;
     
-    DataStructLib::SingleNode<float> node1(num1);
-    DataStructLib::SingleNode<float> node2(num2);
-    DataStructLib::SingleNode<float> node3(num3);
-    
+    for (int i = 0; i < 5; ++i)
+    {
+        DataStructLib::SingleNode<float> node;
+        node.setValue((float) i + 1.0);
+        
+        nodes.add(node);
+    }
+
     DataStructLib::SingleLinkList<float> list;
     
-    list.insertHead(&node1);
-    list.insertHead(&node2);
+    for (int i = 0; i < 5; i+=2)
+    {
+        list.insertHead(nodes.getPtr(i));
+    }
+    list.insertMid(1, nodes.getPtr(3));
+    list.insertMid(3, nodes.getPtr(1));
     
-    std::cout << (list.getHeadPtr())->getValue() << std::endl;
+    list.removeHead();
+    
+    DataStructLib::SingleNode<float> newNode(4.5);
+    
+    list.insertTail(&newNode);
+    
+    for (int i = 0; i < 5; ++i)
+    {
+        std::cout << list.getValue(i) << std::endl;
+    }
+    
+    std::cout << "Head value: " << list.getHeadValue() << std::endl;
+    std::cout << "Tail value: " << list.getTailValue() << std::endl;
 }
