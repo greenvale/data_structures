@@ -1,32 +1,32 @@
 #include <iostream>
 
 #include <DynamicArray.hpp>
-#include <SingLinkList.hpp>
+#include <SinglyLinkedList.hpp>
 
 int main()
 {
-    DataStructLib::DynArray<DataStructLib::SingNode<float>> nodes;
+    datastructlib::DynArray<datastructlib::SingNode<float>> nodes;
     
     for (int i = 0; i < 5; ++i)
     {
-        DataStructLib::SingNode<float> node;
+        datastructlib::SingNode<float> node;
         node.setValue((float) i + 1.0);
         
         nodes.add(node);
     }
 
-    DataStructLib::SingLinkList<float> list;
+    datastructlib::SingLinkList<float> list;
     
     for (int i = 0; i < 5; i+=2)
     {
         list.insertHead(nodes.getPtr(i));
     }
-    list.insertMid(1, nodes.getPtr(3));
-    list.insertMid(3, nodes.getPtr(1));
+    list.insert(1, nodes.getPtr(3));
+    list.insert(3, nodes.getPtr(1));
     
     list.removeHead();
     
-    DataStructLib::SingNode<float> newNode(4.5);
+    datastructlib::SingNode<float> newNode(4.5);
     
     list.insertTail(&newNode);
     
