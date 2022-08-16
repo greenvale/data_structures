@@ -1,44 +1,19 @@
 #include <iostream>
 
-#include <DynamicArray.hpp>
-#include <SinglyLinkedList.hpp>
+#include <Stack.hpp>
 
 int main()
 {
-    datastructlib::DynArray<datastructlib::SingleNode<float>> nodes;
+    datastructlib::Stack<float> myStack;
     
-    for (int i = 0; i < 5; ++i)
-    {
-        datastructlib::SingleNode<float> node;
-        node.setValue((float) i + 1.0);
-        
-        nodes.add(node);
-    }
-
-    datastructlib::SinglyLinkedList<float> list;
+    myStack.push((float) 1.0);
     
-    for (int i = 0; i < 5; i+=2)
-    {
-        list.insertHead(nodes.getPtr(i));
-    }
-    list.insert(1, nodes.getPtr(3));
-    list.insert(3, nodes.getPtr(1));
+    myStack.push((float) 2.0);
+    myStack.push((float) 3.0);
     
-    list.removeHead();
+    std::cout << myStack.peek() << std::endl;
     
-    datastructlib::SingleNode<float> newNode(4.5);
+    float tmp = myStack.pop();
     
-    list.insertTail(&newNode);
-    
-    for (int i = 0; i < 5; ++i)
-    {
-        std::cout << (list.getPtr(i))->getValue() << std::endl;
-    }
-    
-    std::cout << "Head value: " << (list.getHeadPtr())->getValue() << std::endl;
-    std::cout << "Tail value: " << (list.getTailPtr())->getValue() << std::endl;
-    
-    list.clear();
-    
-    std::cout << "Size: " << list.getLength() << std::endl;
+    std::cout << myStack.pop() << std::endl;
 }

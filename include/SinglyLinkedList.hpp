@@ -1,4 +1,6 @@
+#pragma once
 
+#include <assert.h>
 
 namespace datastructlib
 {
@@ -38,8 +40,8 @@ namespace datastructlib
         
         SingleNode<T>* getHeadPtr() const;
         SingleNode<T>* getTailPtr() const;
-        SingleNode<T>* getPtr(const unsigned int& index);
-        unsigned int getLength();
+        SingleNode<T>* getPtr(const unsigned int& index) const;
+        unsigned int getLength() const;
         
         void insertHead(SingleNode<T>* nodePtr);
         void insertTail(SingleNode<T>* nodePtr);
@@ -51,7 +53,6 @@ namespace datastructlib
         void clear();
     };
     
-    // =============================================================================
     // =============================================================================
     // =============================================================================
     // SINGLE LINKED NODE FUNCTIONS
@@ -94,7 +95,6 @@ namespace datastructlib
     
     // =============================================================================
     // =============================================================================
-    // =============================================================================
     // SINGLE LINKED LIST FUNCTIONS
     
     template <class T>
@@ -130,7 +130,7 @@ namespace datastructlib
     }
     
     template <class T>
-    SingleNode<T>* SinglyLinkedList<T>::getPtr(const unsigned int& index)
+    SingleNode<T>* SinglyLinkedList<T>::getPtr(const unsigned int& index) const
     {
         assert((index >= 0) && (index < m_length)); // do not use with head or tail
         
@@ -151,7 +151,7 @@ namespace datastructlib
     }
     
     template <class T>
-    unsigned int SinglyLinkedList<T>::getLength() 
+    unsigned int SinglyLinkedList<T>::getLength() const
     { 
         return m_length; 
     }
