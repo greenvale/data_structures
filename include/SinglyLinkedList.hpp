@@ -267,7 +267,8 @@ namespace datastructlib
     template <class T>
     void SinglyLinkedList<T>::clear()
     {
-        for (int i = 0; i < m_length; ++i) 
+        unsigned int length = m_length;
+        for (int i = 0; i < length; ++i) 
         {
             removeHead();
         }

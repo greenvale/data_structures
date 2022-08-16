@@ -32,9 +32,13 @@ int main()
     
     for (int i = 0; i < 5; ++i)
     {
-        std::cout << list.getValue(i) << std::endl;
+        std::cout << (list.getPtr(i))->getValue() << std::endl;
     }
     
-    std::cout << "Head value: " << list.getHeadValue() << std::endl;
-    std::cout << "Tail value: " << list.getTailValue() << std::endl;
+    std::cout << "Head value: " << (list.getHeadPtr())->getValue() << std::endl;
+    std::cout << "Tail value: " << (list.getTailPtr())->getValue() << std::endl;
+    
+    list.clear();
+    
+    std::cout << "Size: " << list.getLength() << std::endl;
 }
