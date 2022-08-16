@@ -1,19 +1,13 @@
 #include <iostream>
 
-#include <Stack.hpp>
+#include <Queue.hpp>
 
 int main()
 {
-    datastructlib::Stack<float> myStack;
+    datastructlib::Queue<float> myQueue;
     
-    myStack.push((float) 1.0);
+    myQueue.enqueue(1.0);
+    myQueue.enqueue(1.5);
     
-    myStack.push((float) 2.0);
-    myStack.push((float) 3.0);
-    
-    std::cout << myStack.peek() << std::endl;
-    
-    float tmp = myStack.pop();
-    
-    std::cout << myStack.pop() << std::endl;
+    std::cout << myQueue.peek() << std::endl;
 }
