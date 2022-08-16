@@ -1,6 +1,6 @@
 
 
-namespace DataStructLib
+namespace datastructlib
 {
     // SINGLE LINKED NODE HEADER
     

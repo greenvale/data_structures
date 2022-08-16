@@ -3,7 +3,7 @@
 #include <iostream>
 #include <assert.h>
 
-namespace dslib
+namespace datastructlib
 {
     template <class T>
     class DynArray

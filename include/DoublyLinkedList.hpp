@@ -1,6 +1,6 @@
 
 
-namespace DataStructLib
+namespace datastructlib
 {
 
     // DOUBLE LINKED NODE HEADER
