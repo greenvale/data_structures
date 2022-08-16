@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <DynamicArray.hpp>
-#include <LinkedList.hpp>
+#include <SingleLinkList.hpp>
 
 int main()
 {

@@ -23,31 +23,7 @@ namespace DataStructLib
         void setNextPtr(SingleNode* nextPtr);
     };
     
-    // DOUBLE LINKED NODE HEADER
-    
-    template <class T> 
-    class DoubleNode
-    {
-    private:
-        T m_value;
-        DoubleNode* m_prevPtr;
-        DoubleNode* m_nextPtr;
-    public:
-        DoubleNode();
-        DoubleNode(const T& value);
-        DoubleNode(DoubleNode* prevPtr, DoubleNode* nextPtr);
-        DoubleNode(const T& value, DoubleNode* prevPtr, DoubleNode* nextPtr);    
-        
-        T getValue() const;
-        void setValue(const T& value);
-        
-        DoubleNode* getPrevPtr() const;
-        DoubleNode* getNextPtr() const;
-        void setPrevPtr(DoubleNode* prevPtr);
-        void setNextPtr(DoubleNode* nextPtr);
-    };
-    
-    // LINKED LIST
+    // SINGLE LINKED LIST
     
     template <class T>
     class SingleLinkList
@@ -71,11 +47,11 @@ namespace DataStructLib
         
         void insertHead(SingleNode<T>* nodePtr);
         void insertTail(SingleNode<T>* nodePtr);
-        void insertMid(const unsigned int& index, SingleNode<T>* nodePtr);
+        void insert(const unsigned int& index, SingleNode<T>* nodePtr);
         
         void removeHead();
         void removeTail();
-        void removeMid(const unsigned int& index);
+        void remove(const unsigned int& index);
     public:
         bool fwdStepTravPtr();
         bool fwdWalkTravPtr(const unsigned int& dist);
@@ -111,96 +87,16 @@ namespace DataStructLib
     }
     
     template <class T>
-    T SingleNode<T>::getValue() const
-    {
-        return m_value;
-    }
+    T SingleNode<T>::getValue() const { return m_value; }
     
     template <class T>
-    void SingleNode<T>::setValue(const T& value)
-    {
-        m_value = value;
-    }
+    void SingleNode<T>::setValue(const T& value) { m_value = value; } 
+        
+    template <class T>
+    SingleNode<T>* SingleNode<T>::getNextPtr() const { return m_nextPtr; }
     
     template <class T>
-    SingleNode<T>* SingleNode<T>::getNextPtr() const
-    {
-        return m_nextPtr;
-    }
-    
-    template <class T>
-    void SingleNode<T>::setNextPtr(SingleNode* nextPtr) 
-    {
-        m_nextPtr = nextPtr;
-    }
-    
-    // =============================================================================
-    // =============================================================================
-    // =============================================================================
-    // DOUBLE LINKED NODE FUNCTIONS
-    
-    
-    template <class T>
-    DoubleNode<T>::DoubleNode()
-    {
-    }
-    
-    template <class T>
-    DoubleNode<T>::DoubleNode(const T& value)
-    {
-        m_value = value;
-    }
-    
-    template <class T>
-    DoubleNode<T>::DoubleNode(DoubleNode* prevPtr, DoubleNode* nextPtr)
-    {
-        m_prevPtr = prevPtr;
-        m_nextPtr = nextPtr;
-    }
-    
-    template <class T>
-    DoubleNode<T>::DoubleNode(const T& value, DoubleNode* prevPtr, DoubleNode* nextPtr)
-    {
-        m_value = value;
-        m_prevPtr = prevPtr;
-        m_nextPtr = nextPtr;
-    }
-    
-    template <class T>
-    T DoubleNode<T>::getValue() const
-    {
-        return m_value;
-    }
-    
-    template <class T>
-    void DoubleNode<T>::setValue(const T& value)
-    {
-        m_value = value;
-    }
-    
-    template <class T>
-    DoubleNode<T>* DoubleNode<T>::getPrevPtr() const
-    {
-        return m_prevPtr;
-    }
-    
-    template <class T>
-    DoubleNode<T>* DoubleNode<T>::getNextPtr() const
-    {
-        return m_nextPtr;
-    }
-    
-    template <class T>
-    void DoubleNode<T>::setPrevPtr(DoubleNode* prevPtr) 
-    {
-        m_prevPtr = prevPtr;
-    }
-    
-    template <class T>
-    void DoubleNode<T>::setNextPtr(DoubleNode* nextPtr) 
-    {
-        m_nextPtr = nextPtr;
-    }
+    void SingleNode<T>::setNextPtr(SingleNode* nextPtr) { m_nextPtr = nextPtr; }
     
     // =============================================================================
     // =============================================================================
@@ -304,7 +200,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::insertMid(const unsigned int& index, SingleNode<T>* nodePtr)
+    void SingleLinkList<T>::insert(const unsigned int& index, SingleNode<T>* nodePtr)
     {
         assert(m_length > 2);
         assert((index > 0) && (index < m_length));
@@ -364,7 +260,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::removeMid(const unsigned int& index)
+    void SingleLinkList<T>::remove(const unsigned int& index)
     {
         assert(m_length > 2);
         assert((index > 0) && (index < m_length));
