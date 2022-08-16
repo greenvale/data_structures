@@ -31,7 +31,6 @@ namespace datastructlib
     private:
         SingleNode<T>* m_headPtr;
         SingleNode<T>* m_tailPtr;
-        SingleNode<T>* m_travPtr;
         unsigned int m_length;
     public:
         SinglyLinkedList();
@@ -40,10 +39,6 @@ namespace datastructlib
         SingleNode<T>* getHeadPtr() const;
         SingleNode<T>* getTailPtr() const;
         SingleNode<T>* getPtr(const unsigned int& index);
-        
-        T getHeadValue() const;
-        T getTailValue() const;
-        T getValue(const unsigned int& index);
         unsigned int getLength();
         
         void insertHead(SingleNode<T>* nodePtr);
@@ -54,9 +49,6 @@ namespace datastructlib
         void removeTail();
         void remove(const unsigned int& index);
         void clear();
-    public:
-        bool fwdStepTravPtr();
-        bool fwdWalkTravPtr(const unsigned int& dist);
     };
     
     // =============================================================================
@@ -118,6 +110,8 @@ namespace datastructlib
     {
         m_headPtr = headPtr;
         m_tailPtr = tailPtr;
+        m_headPtr->setNextPtr(m_tailPtr);
+        m_tailPtr->setNextPtr(nullptr);
         m_length = 2;
     }
     
@@ -138,33 +132,22 @@ namespace datastructlib
     template <class T>
     SingleNode<T>* SinglyLinkedList<T>::getPtr(const unsigned int& index)
     {
-        assert((index >= 0) && (index < m_length));
+        assert((index >= 0) && (index < m_length)); // do not use with head or tail
         
-        m_travPtr = m_headPtr;
-        bool err = fwdWalkTravPtr(index);
+        SingleNode<T>* travPtr = m_headPtr; // initialise traverse pointer
+        SingleNode<T>* travNextPtr;
         
-        return m_travPtr;
-    }
-    
-    // =============================================================================
-    
-    template <class T>
-    T SinglyLinkedList<T>::getHeadValue() const
-    {
-        return m_headPtr->getValue();
-    }
-    
-    template <class T>
-    T SinglyLinkedList<T>::getTailValue() const
-    {
-        return m_tailPtr->getValue();
-    }
-    
-    template <class T>
-    T SinglyLinkedList<T>::getValue(const unsigned int& index)
-    {
-        SingleNode<T>* nodePtr = getPtr(index);
-        return nodePtr->getValue();
+        unsigned int dist = 0;
+        while (dist < index)
+        {
+            travNextPtr = travPtr->getNextPtr();
+            assert(travNextPtr != nullptr); // should not encounter null ptr
+            
+            travPtr = travNextPtr; // traverse to next ptr
+            dist++;
+        }
+        
+        return travPtr;
     }
     
     template <class T>
@@ -178,14 +161,15 @@ namespace datastructlib
     template <class T>
     void SinglyLinkedList<T>::insertHead(SingleNode<T>* nodePtr)
     {
-        if (m_length > 0)
+        if (m_length == 0)
         {
-            nodePtr->setNextPtr(m_headPtr);
+            // for empty list also set to tail ptr
+            m_tailPtr = nodePtr;
+            nodePtr->setNextPtr(nullptr);
         }
         else
         {
-            m_tailPtr = nodePtr;
-            nodePtr->setNextPtr(nullptr);
+            nodePtr->setNextPtr(m_headPtr);
         }
         m_headPtr = nodePtr;
         m_length++;
@@ -194,13 +178,14 @@ namespace datastructlib
     template <class T>
     void SinglyLinkedList<T>::insertTail(SingleNode<T>* nodePtr)
     {
-        if (m_length > 0)
+        if (m_length == 0)
         {
-            m_tailPtr->setNextPtr(nodePtr);
+            // for empty list also set to head ptr
+            m_headPtr = nodePtr;
         }
         else
         {
-            m_headPtr = nodePtr;
+            m_tailPtr->setNextPtr(nodePtr);
         }
         m_tailPtr = nodePtr;
         nodePtr->setNextPtr(nullptr);
@@ -286,36 +271,5 @@ namespace datastructlib
         {
             removeHead();
         }
-    }
-    
-    // =============================================================================
-        
-    template <class T>
-    bool SinglyLinkedList<T>::fwdWalkTravPtr(const unsigned int& dist)
-    {
-        unsigned int temp = 0;
-        bool flag = true;
-        while (temp < dist)
-        {
-            flag = fwdStepTravPtr(); // forward step traver
-            temp++;
-            
-            if (flag == false)
-            {
-                return false; // traver has fallen off edge - return false (jump too big)
-            }
-       }
-       return true; // temp == jump (traver made it to destination node)
-    }
-    
-    template <class T>
-    bool SinglyLinkedList<T>::fwdStepTravPtr()
-    {
-        if (m_travPtr->getNextPtr() != nullptr)
-        {
-            m_travPtr = m_travPtr->getNextPtr();
-            return true;
-        }
-        return false; // current traver ptr is pointed to tail - no next ptr - could not move!
     }
 }
