@@ -3,10 +3,10 @@
 #include <iostream>
 #include <assert.h>
 
-namespace DataStructLib
+namespace dslib
 {
     template <class T>
-    class DynamicArray
+    class DynArray
     {
     private:
         T* m_staticArray;
@@ -15,9 +15,9 @@ namespace DataStructLib
         unsigned int m_defaultStaticArraySize = 16;
         
     public:
-        DynamicArray();
-        DynamicArray(const unsigned int& defaultStaticArraySize);
-        DynamicArray(const DynamicArray&);
+        DynArray();
+        DynArray(const unsigned int& defaultStaticArraySize);
+        DynArray(const DynArray&);
 
         T get(const unsigned int& index) const;
         T* getPtr(const unsigned int& index) const;
@@ -26,7 +26,7 @@ namespace DataStructLib
         void remove(const unsigned int& index);
         void clear();
 
-        DynamicArray<unsigned int> getValueIndexes(const T& value);
+        DynArray<unsigned int> getValueIndexes(const T& value);
         bool contains(const T& value);
         
         unsigned int getLength() const;
@@ -42,7 +42,7 @@ namespace DataStructLib
     // CTORS / DTORS
     
     template <class T>
-    DynamicArray<T>::DynamicArray()
+    DynArray<T>::DynArray()
     {
         m_staticArraySize = m_defaultStaticArraySize; // no array size provided, therefore set to default size
         m_staticArray = new T[m_staticArraySize]; // initialise static array
@@ -51,7 +51,7 @@ namespace DataStructLib
     }
 
     template <class T>
-    DynamicArray<T>::DynamicArray(
+    DynArray<T>::DynArray(
         const unsigned int& defaultStaticArraySize
     )
     {
@@ -64,8 +64,8 @@ namespace DataStructLib
     }
     
     template <class T>
-    DynamicArray<T>::DynamicArray(
-        const DynamicArray<T>& dynamicArray
+    DynArray<T>::DynArray(
+        const DynArray<T>& dynamicArray
     )
     {
         m_staticArraySize = m_defaultStaticArraySize;
@@ -84,7 +84,7 @@ namespace DataStructLib
     // GET FUNCTIONS
 
     template <class T>
-    T DynamicArray<T>::get(
+    T DynArray<T>::get(
         const unsigned int& index
     ) const
     {
@@ -93,14 +93,14 @@ namespace DataStructLib
     }
     
     template <class T>
-    T* DynamicArray<T>::getPtr(const unsigned int& index) const
+    T* DynArray<T>::getPtr(const unsigned int& index) const
     {
         assert(index < m_length);
         return &(m_staticArray[index]);
     }
     
     template <class T>
-    unsigned int DynamicArray<T>::getLength() const
+    unsigned int DynArray<T>::getLength() const
     {
         return m_length;
     }
@@ -109,7 +109,7 @@ namespace DataStructLib
     // SET FUNCTIONS
 
     template <class T>
-    void DynamicArray<T>::set(
+    void DynArray<T>::set(
         const unsigned int& index, 
         const T& value
     )
@@ -119,7 +119,7 @@ namespace DataStructLib
     }
 
     template <class T>
-    void DynamicArray<T>::add(
+    void DynArray<T>::add(
         const T& value
     )
     {
@@ -134,7 +134,7 @@ namespace DataStructLib
     }
 
     template <class T>
-    void DynamicArray<T>::remove(
+    void DynArray<T>::remove(
         const unsigned int& index
     )
     {
@@ -158,7 +158,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    void DynamicArray<T>::clear()
+    void DynArray<T>::clear()
     {
         delete[] m_staticArray;
         m_staticArraySize = m_defaultStaticArraySize; // reset dynamic array length to default length
@@ -169,11 +169,11 @@ namespace DataStructLib
     // SEARCHING
 
     template <class T>
-    DynamicArray<unsigned int> DynamicArray<T>::getValueIndexes(
+    DynArray<unsigned int> DynArray<T>::getValueIndexes(
         const T& value
     )
     {
-        DynamicArray<unsigned int> indexes; // create dynamic array to store indexes
+        DynArray<unsigned int> indexes; // create dynamic array to store indexes
         
         for (unsigned int i = 0; i < m_length; ++i)
         {
@@ -187,11 +187,11 @@ namespace DataStructLib
     }
     
     template <class T>
-    bool DynamicArray<T>::contains(
+    bool DynArray<T>::contains(
         const T& value
     )
     {
-        DynamicArray<unsigned int> indexes = getValueIndexes(value); // get array of indexes
+        DynArray<unsigned int> indexes = getValueIndexes(value); // get array of indexes
         
         return indexes.getLength() > 0;
     }
@@ -200,7 +200,7 @@ namespace DataStructLib
     // PRINTING
     
     template <class T>
-    void DynamicArray<T>::print()
+    void DynArray<T>::print()
     {
         for (int i = 0; i < m_length; ++i)
         {
@@ -212,7 +212,7 @@ namespace DataStructLib
     // INTERNAL FUNCTIONS
     
     template <class T>
-    void DynamicArray<T>::reallocateStaticArray()
+    void DynArray<T>::reallocateStaticArray()
     {
         T* temp_staticArray = new T[m_staticArraySize]; // create temp static array
         

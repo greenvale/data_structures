@@ -5,49 +5,49 @@ namespace DataStructLib
     // SINGLE LINKED NODE HEADER
     
     template <class T> 
-    class SingleNode
+    class SingNode
     {
     private:
         T m_value;
-        SingleNode* m_nextPtr;
+        SingNode* m_nextPtr;
     public:
-        SingleNode();
-        SingleNode(const T& value);
-        SingleNode(SingleNode* nextPtr);
-        SingleNode(const T& value, SingleNode* nextPtr);      
+        SingNode();
+        SingNode(const T& value);
+        SingNode(SingNode* nextPtr);
+        SingNode(const T& value, SingNode* nextPtr);      
         
         T getValue() const;
         void setValue(const T& value);
         
-        SingleNode* getNextPtr() const;
-        void setNextPtr(SingleNode* nextPtr);
+        SingNode* getNextPtr() const;
+        void setNextPtr(SingNode* nextPtr);
     };
     
-    // SINGLE LINKED LIST
+    // SINGLE LINKED LIST HEADER
     
     template <class T>
-    class SingleLinkList
+    class SingLinkList
     {
     private:
-        SingleNode<T>* m_headPtr;
-        SingleNode<T>* m_tailPtr;
-        SingleNode<T>* m_travPtr;
+        SingNode<T>* m_headPtr;
+        SingNode<T>* m_tailPtr;
+        SingNode<T>* m_travPtr;
         unsigned int m_length;
     public:
-        SingleLinkList();
-        SingleLinkList(SingleNode<T>* headPtr, SingleNode<T>* tailPtr);
+        SingLinkList();
+        SingLinkList(SingNode<T>* headPtr, SingNode<T>* tailPtr);
         
-        SingleNode<T>* getHeadPtr() const;
-        SingleNode<T>* getTailPtr() const;
-        SingleNode<T>* getPtr(const unsigned int& index);
+        SingNode<T>* getHeadPtr() const;
+        SingNode<T>* getTailPtr() const;
+        SingNode<T>* getPtr(const unsigned int& index);
         
         T getHeadValue() const;
         T getTailValue() const;
         T getValue(const unsigned int& index);
         
-        void insertHead(SingleNode<T>* nodePtr);
-        void insertTail(SingleNode<T>* nodePtr);
-        void insert(const unsigned int& index, SingleNode<T>* nodePtr);
+        void insertHead(SingNode<T>* nodePtr);
+        void insertTail(SingNode<T>* nodePtr);
+        void insert(const unsigned int& index, SingNode<T>* nodePtr);
         
         void removeHead();
         void removeTail();
@@ -63,40 +63,40 @@ namespace DataStructLib
     // SINGLE LINKED NODE FUNCTIONS
     
     template <class T>
-    SingleNode<T>::SingleNode()
+    SingNode<T>::SingNode()
     {
     }
     
     template <class T>
-    SingleNode<T>::SingleNode(const T& value)
+    SingNode<T>::SingNode(const T& value)
     {
         m_value = value;
     }
     
     template <class T>
-    SingleNode<T>::SingleNode(SingleNode* nextPtr)
+    SingNode<T>::SingNode(SingNode* nextPtr)
     {
         m_nextPtr = nextPtr;
     }
     
     template <class T>
-    SingleNode<T>::SingleNode(const T& value, SingleNode* nextPtr)
+    SingNode<T>::SingNode(const T& value, SingNode* nextPtr)
     {
         m_value = value;
         m_nextPtr = nextPtr;
     }
     
     template <class T>
-    T SingleNode<T>::getValue() const { return m_value; }
+    T SingNode<T>::getValue() const { return m_value; }
     
     template <class T>
-    void SingleNode<T>::setValue(const T& value) { m_value = value; } 
+    void SingNode<T>::setValue(const T& value) { m_value = value; } 
         
     template <class T>
-    SingleNode<T>* SingleNode<T>::getNextPtr() const { return m_nextPtr; }
+    SingNode<T>* SingNode<T>::getNextPtr() const { return m_nextPtr; }
     
     template <class T>
-    void SingleNode<T>::setNextPtr(SingleNode* nextPtr) { m_nextPtr = nextPtr; }
+    void SingNode<T>::setNextPtr(SingNode* nextPtr) { m_nextPtr = nextPtr; }
     
     // =============================================================================
     // =============================================================================
@@ -104,7 +104,7 @@ namespace DataStructLib
     // LINKED LIST FUNCTIONS
     
     template <class T>
-    SingleLinkList<T>::SingleLinkList()
+    SingLinkList<T>::SingLinkList()
     {
         m_headPtr = nullptr;
         m_tailPtr = nullptr;
@@ -112,7 +112,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    SingleLinkList<T>::SingleLinkList(SingleNode<T>* headPtr, SingleNode<T>* tailPtr)
+    SingLinkList<T>::SingLinkList(SingNode<T>* headPtr, SingNode<T>* tailPtr)
     {
         m_headPtr = headPtr;
         m_tailPtr = tailPtr;
@@ -122,19 +122,19 @@ namespace DataStructLib
     // =============================================================================
     
     template <class T>
-    SingleNode<T>* SingleLinkList<T>::getHeadPtr() const
+    SingNode<T>* SingLinkList<T>::getHeadPtr() const
     {
         return m_headPtr;
     }
     
     template <class T>
-    SingleNode<T>* SingleLinkList<T>::getTailPtr() const
+    SingNode<T>* SingLinkList<T>::getTailPtr() const
     {
         return m_tailPtr;
     }
     
     template <class T>
-    SingleNode<T>* SingleLinkList<T>::getPtr(const unsigned int& index)
+    SingNode<T>* SingLinkList<T>::getPtr(const unsigned int& index)
     {
         assert((index >= 0) && (index < m_length));
         
@@ -147,28 +147,28 @@ namespace DataStructLib
     // =============================================================================
     
     template <class T>
-    T SingleLinkList<T>::getHeadValue() const
+    T SingLinkList<T>::getHeadValue() const
     {
         return m_headPtr->getValue();
     }
     
     template <class T>
-    T SingleLinkList<T>::getTailValue() const
+    T SingLinkList<T>::getTailValue() const
     {
         return m_tailPtr->getValue();
     }
     
     template <class T>
-    T SingleLinkList<T>::getValue(const unsigned int& index)
+    T SingLinkList<T>::getValue(const unsigned int& index)
     {
-        SingleNode<T>* nodePtr = getPtr(index);
+        SingNode<T>* nodePtr = getPtr(index);
         return nodePtr->getValue();
     }
     
     // =============================================================================
     
     template <class T>
-    void SingleLinkList<T>::insertHead(SingleNode<T>* nodePtr)
+    void SingLinkList<T>::insertHead(SingNode<T>* nodePtr)
     {
         if (m_length > 0)
         {
@@ -184,7 +184,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::insertTail(SingleNode<T>* nodePtr)
+    void SingLinkList<T>::insertTail(SingNode<T>* nodePtr)
     {
         if (m_length > 0)
         {
@@ -200,12 +200,12 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::insert(const unsigned int& index, SingleNode<T>* nodePtr)
+    void SingLinkList<T>::insert(const unsigned int& index, SingNode<T>* nodePtr)
     {
         assert(m_length > 2);
         assert((index > 0) && (index < m_length));
         
-        SingleNode<T>* prevPtr = getPtr(index - 1);
+        SingNode<T>* prevPtr = getPtr(index - 1);
         
         nodePtr->setNextPtr(prevPtr->getNextPtr());
         prevPtr->setNextPtr(nodePtr);
@@ -215,7 +215,7 @@ namespace DataStructLib
     // =============================================================================
     
     template <class T>
-    void SingleLinkList<T>::removeHead()
+    void SingLinkList<T>::removeHead()
     {
         assert(m_length > 0);
         
@@ -236,7 +236,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::removeTail()
+    void SingLinkList<T>::removeTail()
     {
         assert(m_length > 0);
         
@@ -252,7 +252,7 @@ namespace DataStructLib
         }
         else
         {
-            SingleNode<T>* prevNode = getPtr(m_length - 2); // get node before tail - make this tail
+            SingNode<T>* prevNode = getPtr(m_length - 2); // get node before tail - make this tail
             prevNode->setNextPtr(nullptr);
             m_tailPtr = prevNode;
         }
@@ -260,13 +260,13 @@ namespace DataStructLib
     }
     
     template <class T>
-    void SingleLinkList<T>::remove(const unsigned int& index)
+    void SingLinkList<T>::remove(const unsigned int& index)
     {
         assert(m_length > 2);
         assert((index > 0) && (index < m_length));
         
-        SingleNode<T>* prevNode = getPtr(index - 1);
-        SingleNode<T>* thisNode = prevNode->getNextPtr();
+        SingNode<T>* prevNode = getPtr(index - 1);
+        SingNode<T>* thisNode = prevNode->getNextPtr();
         prevNode->setNextPtr(thisNode->getNextPtr());
         m_length--;
     }
@@ -274,7 +274,7 @@ namespace DataStructLib
     // =============================================================================
         
     template <class T>
-    bool SingleLinkList<T>::fwdWalkTravPtr(const unsigned int& dist)
+    bool SingLinkList<T>::fwdWalkTravPtr(const unsigned int& dist)
     {
         unsigned int temp = 0;
         bool flag = true;
@@ -292,7 +292,7 @@ namespace DataStructLib
     }
     
     template <class T>
-    bool SingleLinkList<T>::fwdStepTravPtr()
+    bool SingLinkList<T>::fwdStepTravPtr()
     {
         if (m_travPtr->getNextPtr() != nullptr)
         {
