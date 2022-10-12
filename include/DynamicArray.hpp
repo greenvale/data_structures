@@ -127,7 +127,7 @@ void DynamicArray<T>::remove(const unsigned int& index)
         this->m_statArr[i - 1] = this->m_statArr[i]; // shift RH values to left by one, thereby removing target value
     }
     
-    this->m_statStat[this->m_length - 1] = 0; // set end value to be nil and reduce length
+    this->m_statArr[this->m_length - 1] = 0; // set end value to be nil and reduce length
     this->m_length--;
 
     // check if array can be downsized -> length <= arrSize / 2

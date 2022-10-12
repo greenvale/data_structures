@@ -41,7 +41,7 @@ namespace datastructlib
     template <class T>
     T Stack<T>::peek()
     {
-        return (m_stackList.getHeadPtr())->getValue();
+        return (m_stackList.headPtr())->getValue();
     }
     
     template <class T>

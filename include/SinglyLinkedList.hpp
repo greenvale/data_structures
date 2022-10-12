@@ -271,7 +271,7 @@ void SinglyLinkedList<T>::remove(const unsigned int& index)
 template <class T>
 void SinglyLinkedList<T>::clear()
 {
-    unsigned int length = m_length;
+    unsigned int length = this->m_length;
     for (int i = 0; i < length; ++i) 
     {
         this->removeHead();
