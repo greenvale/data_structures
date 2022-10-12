@@ -4,273 +4,277 @@
 
 namespace datastructlib
 {
-    // SINGLE LINKED NODE HEADER
+
+/* Singly linked node */    
+template <class T> 
+class SingleNode
+{
+private:
+    T m_val;
+    SingleNode* m_nextPtr;
+public:
+    SingleNode();
+    SingleNode(const T& val);
+    SingleNode(SingleNode* nextPtr);
+    SingleNode(const T& val, SingleNode* nextPtr);      
     
-    template <class T> 
-    class SingleNode
+    T getVal() const;
+    void setVal(const T& val);
+    
+    SingleNode* getNextPtr() const;
+    void setNextPtr(SingleNode* nextPtr);
+};
+
+/* Singly linked list */
+template <class T>
+class SinglyLinkedList
+{
+private:
+    SingleNode<T>* m_headPtr;
+    SingleNode<T>* m_tailPtr;
+    unsigned int m_length;
+public:
+    SinglyLinkedList();
+    
+    SingleNode<T>* headPtr() const;
+    SingleNode<T>* tailPtr() const;
+    SingleNode<T>* getPtr(const unsigned int& index) const;
+    unsigned int length() const;
+    
+    void insertHead(SingleNode<T>* nodePtr);
+    void insertTail(SingleNode<T>* nodePtr);
+    void insert(const unsigned int& index, SingleNode<T>* nodePtr);
+    
+    void removeHead();
+    void removeTail();
+    void remove(const unsigned int& index);
+    void clear();
+};
+
+/* default ctor */
+template <class T>
+SingleNode<T>::SingleNode()
+{
+}
+
+/* ctor with val */
+template <class T>
+SingleNode<T>::SingleNode(const T& val)
+{
+    this->m_val = val;
+}
+
+/* ctor with next ptr */
+template <class T>
+SingleNode<T>::SingleNode(SingleNode* nextPtr)
+{
+    this->m_nextPtr = nextPtr;
+}
+
+/* ctor with val and next ptr */
+template <class T>
+SingleNode<T>::SingleNode(const T& val, SingleNode* nextPtr)
+{
+    this->m_val = val;
+    this->m_nextPtr = nextPtr;
+}
+
+/* returns val */
+template <class T>
+T SingleNode<T>::getVal() const 
+{ 
+    return this->m_val; 
+}
+
+/* sets val */
+template <class T>
+void SingleNode<T>::setVal(const T& val) 
+{ 
+    this->m_val = val; 
+} 
+
+/* returns linked node ptr */
+template <class T>
+SingleNode<T>* SingleNode<T>::getNextPtr() const 
+{ 
+    return this->m_nextPtr; 
+}
+
+/* sets linked node ptr */
+template <class T>
+void SingleNode<T>::setNextPtr(SingleNode* nextPtr) 
+{ 
+    this->m_nextPtr = nextPtr; 
+}
+
+/* default ctor */
+template <class T>
+SinglyLinkedList<T>::SinglyLinkedList()
+{
+    this->m_headPtr = nullptr;
+    this->m_tailPtr = nullptr;
+    this->m_length = 0;
+}
+
+/* returns head ptr */
+template <class T>
+SingleNode<T>* SinglyLinkedList<T>::headPtr() const
+{
+    return m_headPtr;
+}
+
+/* returns tail ptr */
+template <class T>
+SingleNode<T>* SinglyLinkedList<T>::tailPtr() const
+{
+    return m_tailPtr;
+}
+
+/* returns ptr at given index position */
+template <class T>
+SingleNode<T>* SinglyLinkedList<T>::getPtr(const unsigned int& index) const
+{
+    assert((index >= 0) && (index < this->m_length)); // do not use with head or tail
+    
+    SingleNode<T>* travPtr = this->m_headPtr; // initialise traverse pointer
+    SingleNode<T>* travNextPtr;
+    unsigned int dist = 0;
+    while (dist < index)
     {
-    private:
-        T m_value;
-        SingleNode* m_nextPtr;
-    public:
-        SingleNode();
-        SingleNode(const T& value);
-        SingleNode(SingleNode* nextPtr);
-        SingleNode(const T& value, SingleNode* nextPtr);      
+        travNextPtr = travPtr->getNextPtr();
+        assert(travNextPtr != nullptr); // should not encounter null ptr
         
-        T getValue() const;
-        void setValue(const T& value);
-        
-        SingleNode* getNextPtr() const;
-        void setNextPtr(SingleNode* nextPtr);
-    };
-    
-    // SINGLE LINKED LIST HEADER
-    
-    template <class T>
-    class SinglyLinkedList
-    {
-    private:
-        SingleNode<T>* m_headPtr;
-        SingleNode<T>* m_tailPtr;
-        unsigned int m_length;
-    public:
-        SinglyLinkedList();
-        SinglyLinkedList(SingleNode<T>* headPtr, SingleNode<T>* tailPtr);
-        
-        SingleNode<T>* getHeadPtr() const;
-        SingleNode<T>* getTailPtr() const;
-        SingleNode<T>* getPtr(const unsigned int& index) const;
-        unsigned int getLength() const;
-        
-        void insertHead(SingleNode<T>* nodePtr);
-        void insertTail(SingleNode<T>* nodePtr);
-        void insert(const unsigned int& index, SingleNode<T>* nodePtr);
-        
-        void removeHead();
-        void removeTail();
-        void remove(const unsigned int& index);
-        void clear();
-    };
-    
-    // =============================================================================
-    // =============================================================================
-    // SINGLE LINKED NODE FUNCTIONS
-    
-    template <class T>
-    SingleNode<T>::SingleNode()
-    {
+        travPtr = travNextPtr; // traverse to next ptr
+        dist++;
     }
-    
-    template <class T>
-    SingleNode<T>::SingleNode(const T& value)
+    return travPtr;
+}
+
+/* returns length */
+template <class T>
+unsigned int SinglyLinkedList<T>::length() const
+{ 
+    return this->m_length; 
+}
+
+/* insert new head */
+template <class T>
+void SinglyLinkedList<T>::insertHead(SingleNode<T>* nodePtr)
+{
+    if (this->m_length == 0)
     {
-        m_value = value;
-    }
-    
-    template <class T>
-    SingleNode<T>::SingleNode(SingleNode* nextPtr)
-    {
-        m_nextPtr = nextPtr;
-    }
-    
-    template <class T>
-    SingleNode<T>::SingleNode(const T& value, SingleNode* nextPtr)
-    {
-        m_value = value;
-        m_nextPtr = nextPtr;
-    }
-    
-    template <class T>
-    T SingleNode<T>::getValue() const { return m_value; }
-    
-    template <class T>
-    void SingleNode<T>::setValue(const T& value) { m_value = value; } 
-        
-    template <class T>
-    SingleNode<T>* SingleNode<T>::getNextPtr() const { return m_nextPtr; }
-    
-    template <class T>
-    void SingleNode<T>::setNextPtr(SingleNode* nextPtr) { m_nextPtr = nextPtr; }
-    
-    // =============================================================================
-    // =============================================================================
-    // SINGLE LINKED LIST FUNCTIONS
-    
-    template <class T>
-    SinglyLinkedList<T>::SinglyLinkedList()
-    {
-        m_headPtr = nullptr;
-        m_tailPtr = nullptr;
-        m_length = 0;
-    }
-    
-    template <class T>
-    SinglyLinkedList<T>::SinglyLinkedList(SingleNode<T>* headPtr, SingleNode<T>* tailPtr)
-    {
-        m_headPtr = headPtr;
-        m_tailPtr = tailPtr;
-        m_headPtr->setNextPtr(m_tailPtr);
-        m_tailPtr->setNextPtr(nullptr);
-        m_length = 2;
-    }
-    
-    // =============================================================================
-    
-    template <class T>
-    SingleNode<T>* SinglyLinkedList<T>::getHeadPtr() const
-    {
-        return m_headPtr;
-    }
-    
-    template <class T>
-    SingleNode<T>* SinglyLinkedList<T>::getTailPtr() const
-    {
-        return m_tailPtr;
-    }
-    
-    template <class T>
-    SingleNode<T>* SinglyLinkedList<T>::getPtr(const unsigned int& index) const
-    {
-        assert((index >= 0) && (index < m_length)); // do not use with head or tail
-        
-        SingleNode<T>* travPtr = m_headPtr; // initialise traverse pointer
-        SingleNode<T>* travNextPtr;
-        
-        unsigned int dist = 0;
-        while (dist < index)
-        {
-            travNextPtr = travPtr->getNextPtr();
-            assert(travNextPtr != nullptr); // should not encounter null ptr
-            
-            travPtr = travNextPtr; // traverse to next ptr
-            dist++;
-        }
-        
-        return travPtr;
-    }
-    
-    template <class T>
-    unsigned int SinglyLinkedList<T>::getLength() const
-    { 
-        return m_length; 
-    }
-    
-    // =============================================================================
-    
-    template <class T>
-    void SinglyLinkedList<T>::insertHead(SingleNode<T>* nodePtr)
-    {
-        if (m_length == 0)
-        {
-            // for empty list also set to tail ptr
-            m_tailPtr = nodePtr;
-            nodePtr->setNextPtr(nullptr);
-        }
-        else
-        {
-            nodePtr->setNextPtr(m_headPtr);
-        }
-        m_headPtr = nodePtr;
-        m_length++;
-    }
-    
-    template <class T>
-    void SinglyLinkedList<T>::insertTail(SingleNode<T>* nodePtr)
-    {
-        if (m_length == 0)
-        {
-            // for empty list also set to head ptr
-            m_headPtr = nodePtr;
-        }
-        else
-        {
-            m_tailPtr->setNextPtr(nodePtr);
-        }
-        m_tailPtr = nodePtr;
+        // for empty list also set to tail ptr
+        this->m_tailPtr = nodePtr;
         nodePtr->setNextPtr(nullptr);
-        m_length++;
     }
-    
-    template <class T>
-    void SinglyLinkedList<T>::insert(const unsigned int& index, SingleNode<T>* nodePtr)
+    else
     {
-        assert(m_length > 2);
-        assert((index > 0) && (index < m_length));
-        
-        SingleNode<T>* prevPtr = getPtr(index - 1);
-        
-        nodePtr->setNextPtr(prevPtr->getNextPtr());
-        prevPtr->setNextPtr(nodePtr);
-        m_length++;
+        nodePtr->setNextPtr(this->m_headPtr);
     }
-    
-    // =============================================================================
-    
-    template <class T>
-    void SinglyLinkedList<T>::removeHead()
+    this->m_headPtr = nodePtr;
+    this->m_length++;
+}
+
+/* insert new tail */
+template <class T>
+void SinglyLinkedList<T>::insertTail(SingleNode<T>* nodePtr)
+{
+    if (this->m_length == 0)
     {
-        assert(m_length > 0);
-        
-        if (m_length == 1)
-        {
-            m_headPtr = nullptr; // no more elements in list
-            m_tailPtr = nullptr;
-        }
-        else if (m_length == 2)
-        {
-            m_headPtr = m_tailPtr; // set head to be current tail - forget old head
-        }
-        else
-        {
-            m_headPtr = m_headPtr->getNextPtr(); // set head to be next ptr from old head
-        }
-        m_length--;
+        // for empty list also set to head ptr
+        this->m_headPtr = nodePtr;
     }
-    
-    template <class T>
-    void SinglyLinkedList<T>::removeTail()
+    else
     {
-        assert(m_length > 0);
-        
-        if (m_length == 1)
-        {
-            m_headPtr = nullptr; // no more elements in list
-            m_tailPtr = nullptr;
-        }
-        else if (m_length == 2)
-        {
-            m_tailPtr = m_headPtr; // set tail to be current head - forget old tail
-            m_headPtr->setNextPtr(nullptr);
-        }
-        else
-        {
-            SingleNode<T>* prevNode = getPtr(m_length - 2); // get node before tail - make this tail
-            prevNode->setNextPtr(nullptr);
-            m_tailPtr = prevNode;
-        }
-        m_length--;
+        this->m_tailPtr->setNextPtr(nodePtr);
     }
+    this->m_tailPtr = nodePtr;
+    nodePtr->setNextPtr(nullptr);
+    this->m_length++;
+}
+
+/* insert node at given index */
+template <class T>
+void SinglyLinkedList<T>::insert(const unsigned int& index, SingleNode<T>* nodePtr)
+{
+    assert(this->m_length > 2);
+    assert((index > 0) && (index < this->m_length));
     
-    template <class T>
-    void SinglyLinkedList<T>::remove(const unsigned int& index)
-    {
-        assert(m_length > 2);
-        assert((index > 0) && (index < m_length));
-        
-        SingleNode<T>* prevNode = getPtr(index - 1);
-        SingleNode<T>* thisNode = prevNode->getNextPtr();
-        prevNode->setNextPtr(thisNode->getNextPtr());
-        m_length--;
-    }
+    SingleNode<T>* prevPtr = this->getPtr(index - 1);
     
-    template <class T>
-    void SinglyLinkedList<T>::clear()
+    nodePtr->setNextPtr(prevPtr->getNextPtr());
+    prevPtr->setNextPtr(nodePtr);
+    this->m_length++;
+}
+
+/* removes head */
+template <class T>
+void SinglyLinkedList<T>::removeHead()
+{
+    assert(this->m_length > 0);
+    
+    if (this->m_length == 1)
     {
-        unsigned int length = m_length;
-        for (int i = 0; i < length; ++i) 
-        {
-            removeHead();
-        }
+        this->m_headPtr = nullptr; // no more elements in list
+        this->m_tailPtr = nullptr;
     }
+    else if (this->m_length == 2)
+    {
+        this->m_headPtr = this->m_tailPtr; // set head to be current tail - forget old head
+    }
+    else
+    {
+        this->m_headPtr = m_headPtr->getNextPtr(); // set head to be next ptr from old head
+    }
+    this->m_length--;
+}
+
+/* removes tail */
+template <class T>
+void SinglyLinkedList<T>::removeTail()
+{
+    assert(this->m_length > 0);
+    
+    if (this->m_length == 1)
+    {
+        this->m_headPtr = nullptr; // no more elements in list
+        this->m_tailPtr = nullptr;
+    }
+    else if (this->m_length == 2)
+    {
+        this->m_tailPtr = this->m_headPtr; // set tail to be current head - forget old tail
+        this->m_headPtr->setNextPtr(nullptr);
+    }
+    else
+    {
+        SingleNode<T>* prevNode = getPtr(this->m_length - 2); // get node before tail - make this tail
+        prevNode->setNextPtr(nullptr);
+        this->m_tailPtr = prevNode;
+    }
+    this->m_length--;
+}
+
+/* removes an element at given index */
+template <class T>
+void SinglyLinkedList<T>::remove(const unsigned int& index)
+{
+    assert(this->m_length > 2);
+    assert((index > 0) && (index < this->m_length));
+    
+    SingleNode<T>* prevNode = this->getPtr(index - 1);
+    SingleNode<T>* thisNode = prevNode->getNextPtr();
+    prevNode->setNextPtr(thisNode->getNextPtr());
+    this->m_length--;
+}
+
+/* clears entire linked list */
+template <class T>
+void SinglyLinkedList<T>::clear()
+{
+    unsigned int length = m_length;
+    for (int i = 0; i < length; ++i) 
+    {
+        this->removeHead();
+    }
+}
 }
