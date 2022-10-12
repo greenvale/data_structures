@@ -21,7 +21,7 @@ public:
     {
 
     }
-    virtual bool compare(const T& parent, const T& child) const
+    virtual bool operator()(const T& parent, const T& child) const
     {
         return false;
     }
@@ -32,7 +32,7 @@ template <class T>
 class MinCompareFunctor : public CompareFunctor<T>
 {
 public:
-    bool compare(const T& parent, const T& child) const
+    bool operator()(const T& parent, const T& child) const
     {
         if (parent <= child)
             return true;
@@ -46,7 +46,7 @@ template <class T>
 class MaxCompareFunctor : public CompareFunctor<T>
 {
 public:
-    bool compare(const T& parent, const T& child) const
+    bool operator()(const T& parent, const T& child) const
     {
         if (parent >= child)
             return true;
@@ -63,10 +63,10 @@ class BinaryHeap
 {
 private:
     DynamicArray<T> m_arr;
-    CompareFunctor<T>* m_comparePtr; // functor for comparison between parent and node
+    CompareFunctor<T> m_compare; // functor for comparison between parent and node
 public:
     BinaryHeap();
-    BinaryHeap(CompareFunctor<T>* comparePtr);
+    BinaryHeap(const CompareFunctor<T>& compare);
     bool checkHeapInvar(); // returns true if heap invariant is satisfied
     void swim(const unsigned int& index);
     void sink(const unsigned int& index);
@@ -85,9 +85,9 @@ BinaryHeap<T>::BinaryHeap()
 
 /* ctor with functor for comparison */
 template <class T>
-BinaryHeap<T>::BinaryHeap(CompareFunctor<T>* comparePtr)
+BinaryHeap<T>::BinaryHeap(const CompareFunctor<T>& compare)
 {
-    m_comparePtr = comparePtr;
+    m_compare = compare;
 }
 
 /* returns true if heap invariant is satisfied */ 
@@ -98,9 +98,9 @@ bool BinaryHeap<T>::checkHeapInvar()
     {
         if (2*i + 1 < this->m_arr.length())
         {
-            if (m_comparePtr->compare(this->m_arr.get(i), this->m_arr.get(2*i + 1)) == false)
+            if (m_compare(this->m_arr.get(i), this->m_arr.get(2*i + 1)) == false)
                 return false;
-            if (m_comparePtr->compare(this->m_arr.get(i), this->m_arr.get(2*i + 1)) == false)
+            if (m_compare(this->m_arr.get(i), this->m_arr.get(2*i + 1)) == false)
                 return false;
         }
     }
@@ -111,7 +111,7 @@ bool BinaryHeap<T>::checkHeapInvar()
 template <class T>
 void BinaryHeap<T>::swim(const unsigned int& index) 
 {
-    assert(this->m_comparePtr != nullptr);
+    //assert(this->m_comparePtr != nullptr);
     unsigned int childIndex = index;
     unsigned int parentIndex;
     bool stop = false;
@@ -119,7 +119,7 @@ void BinaryHeap<T>::swim(const unsigned int& index)
     {
         parentIndex = (unsigned int) floor(((double) childIndex - 1.0) / 2.0);
         
-        if ((childIndex != 0) && (m_comparePtr->compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex)) == false))
+        if ((childIndex != 0) && (m_compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex)) == false))
         {
             // if parent val > child val and not at top node, then bubble up child
             T tmp = this->m_arr.get(parentIndex);
@@ -138,7 +138,7 @@ void BinaryHeap<T>::swim(const unsigned int& index)
 template <class T>
 void BinaryHeap<T>::sink(const unsigned int& index) 
 {
-    assert(this->m_comparePtr != nullptr);
+    //assert(this->m_comparePtr != nullptr);
     unsigned int parentIndex = index;
     unsigned int childIndex_lhs;
     unsigned int childIndex_rhs;
@@ -149,7 +149,7 @@ void BinaryHeap<T>::sink(const unsigned int& index)
         childIndex_rhs = childIndex_lhs + 1;
 
         // if lhs child index is valid and its value does not satisfy the heap invariant, swap the two values
-        if ((childIndex_lhs < this->m_arr.length()) && (m_comparePtr->compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex_lhs)) == false))
+        if ((childIndex_lhs < this->m_arr.length()) && (m_compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex_lhs)) == false))
         {
             T tmp = this->m_arr.get(childIndex_lhs);
             this->m_arr.set(childIndex_lhs, this->m_arr.get(parentIndex));
@@ -157,7 +157,7 @@ void BinaryHeap<T>::sink(const unsigned int& index)
             parentIndex = childIndex_lhs;
         }
         // if rhs child index is valid and its value does not satisfy the heap invariant, swap the two values
-        else if ((childIndex_rhs < this->m_arr.length()) && (m_comparePtr->compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex_rhs)) == false))
+        else if ((childIndex_rhs < this->m_arr.length()) && (m_compare(this->m_arr.get(parentIndex), this->m_arr.get(childIndex_rhs)) == false))
         {
             T tmp = this->m_arr.get(childIndex_rhs);
             this->m_arr.set(childIndex_rhs, this->m_arr.get(parentIndex));
@@ -224,7 +224,7 @@ void BinaryHeap<T>::removeByVal(const T& val)
         if (this->m_arr.length() > 0) // check that the val element that was removed was not the only element
         {
             this->m_arr.set(ind, last);
-            if (this->m_comparePtr->compare(val, last) == true) // 'val' is prioritised above 'last' - therefore only consider sinking
+            if (this->m_compare(val, last) == true) // 'val' is prioritised above 'last' - therefore only consider sinking
             {
                 this->sink(ind);
             }

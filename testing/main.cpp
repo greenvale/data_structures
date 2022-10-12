@@ -5,7 +5,7 @@
 int main()
 {
     datastructlib::MinCompareFunctor<double> compareFunctor;
-    datastructlib::BinaryHeap<double> bh(&compareFunctor);
+    datastructlib::BinaryHeap<double> bh(compareFunctor);
 
     bh.insert(1.0);
     bh.insert(0.4);
