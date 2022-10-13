@@ -1,27 +1,27 @@
 #include <iostream>
 
-#include <BinaryHeap.hpp>
+#include <BinarySearchTree.hpp>
 
-int main()
+int main() 
 {
-    datastructlib::MinCompareFunctor<double> compareFunctor;
-    datastructlib::BinaryHeap<double> bh(compareFunctor);
+    datastructlib::BinarySearchTree<double> bst;
+    bst.insert(10.0);
+    bst.insert(8.0);
+    bst.insert(12.0);
+    bst.insert(7.0);
+    bst.insert(9.0);
+    bst.insert(11.0);
+    bst.insert(13.0);
+    bst.insert(6.5);
+    bst.insert(7.5);
+    bst.insert(8.5);
+    bst.insert(9.5);
+    bst.insert(10.5);
+    bst.insert(11.5);
+    bst.insert(12.5);
+    bst.insert(13.5);
 
-    bh.insert(1.0);
-    bh.insert(0.4);
-    bh.insert(0.6);
-    bh.insert(1.4);
-    bh.insert(1.1);
-    bh.insert(1.5);
-    bh.insert(0.2);
-    bh.insert(0.5);
-    bh.insert(0.1);
+    bst.remove(13.0);
 
-    bh.print();
-
-    bh.removeByVal(0.5);
-    
-    std::cout << std::endl << std::endl;
-
-    bh.print();
+    bst.display();
 }

@@ -1,4 +1,4 @@
-/* Binary heap class
+/* Binary heap class - by W Denny
     - binary tree that supports the heap invariant
     - uses canonical method to represent binary tree - an array
     - uses functor for comparison to satisfy heap invariance
@@ -65,7 +65,7 @@ private:
     DynamicArray<T> m_arr;
     CompareFunctor<T> m_compare; // functor for comparison between parent and node
 public:
-    BinaryHeap();
+    BinaryHeap() = delete; // cannot instantiate without compare functor
     BinaryHeap(const CompareFunctor<T>& compare);
     bool checkHeapInvar(); // returns true if heap invariant is satisfied
     void swim(const unsigned int& index);
@@ -77,11 +77,12 @@ public:
 };
 
 /* default ctor */
+/*
 template <class T>
 BinaryHeap<T>::BinaryHeap()
 {
 
-}
+} */
 
 /* ctor with functor for comparison */
 template <class T>

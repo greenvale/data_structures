@@ -1,3 +1,5 @@
+/* Singly linked list - by W Denny */
+
 #pragma once
 
 #include <assert.h>
