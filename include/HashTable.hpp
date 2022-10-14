@@ -3,6 +3,7 @@
 #pragma once
 
 #include <DynamicArray.hpp>
+#include <assert.h>
 
 namespace datastructlib
 {
@@ -21,7 +22,7 @@ public:
     HashFunctor()
     {
     }
-    virtual unsigned int operator()(const T& key)
+    virtual unsigned int operator()(const T& key, const unsigned int& arrLength)
     {
         return 0;
     }
@@ -40,10 +41,42 @@ class ProbeFunctor
 public:
     ProbeFunctor()
     {
+
     }
-    virtual unsigned int operator()(const unsigned int& x)
+    virtual void reset()
+    {
+
+    }
+    virtual unsigned int increment(const unsigned int& arrLength)
     {
         return 0;
+    }
+};
+
+/* Linear probing function */
+class LinearProbeFunctor : public ProbeFunctor
+{
+private:
+    unsigned int m_x;
+    unsigned int m_a;
+    unsigned int m_b;
+public:
+    LinearProbeFunctor() = delete;
+    LinearProbeFunctor(const unsigned int& a, const unsigned int& b)
+    {
+        assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
+        this->m_a = a;
+        this->m_b = b;
+    }
+    void reset()
+    {
+        this->m_x = 0;
+    }
+    unsigned int increment(const unsigned int& arrLength)
+    {
+        assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
+        this->m_x += 1;
+        return m_a*this->m_x + m_b;
     }
 };
 
@@ -71,7 +104,7 @@ class HashTable_SearchResult
 {
 public:
     unsigned int m_hashedKey;
-    unsigned int m_sepChainInd; // index in the seperate chain if this is used
+    unsigned int m_sepChainInd; // index in the seperate chain if this is used in the hash table
     KeyValPair<T, U>* m_kvpPtr; // ptr to the key value pair object
 };
 
@@ -116,6 +149,7 @@ HashTable_SeperateChaining<T, U>::HashTable_SeperateChaining(const unsigned int&
     this->m_arrLength = length;
     this->m_data = new DynamicArray<KeyValPair<T, U>>[length];
     this->m_hashFunctionPtr = hashFunctionPtr;
+    this->m_numEntries = 0;
 }
 
 /* dtor */
@@ -129,16 +163,16 @@ HashTable_SeperateChaining<T, U>::~HashTable_SeperateChaining()
 template <class T, class U>
 HashTable_SearchResult<T, U> HashTable_SeperateChaining<T, U>::find(const T& key)
 {  
-    unsigned int ind = (*this->m_hashFunctionPtr)(key);
-    for (unsigned int i = 0; i < this->m_data[ind].length(); ++i)
+    unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
+    for (unsigned int i = 0; i < this->m_data[hashedKey].length(); ++i)
     {
-        if (this->m_data[ind].get(i).m_key == key)
+        if (this->m_data[hashedKey].get(i).m_key == key)
         {
             // found
             HashTable_SearchResult<T, U> result;
-            result.m_hashedKey = ind;
+            result.m_hashedKey = hashedKey;
             result.m_sepChainInd = i;
-            result.m_kvpPtr = this->m_data[ind].getPtr(i);
+            result.m_kvpPtr = this->m_data[hashedKey].getPtr(i); // no copying of key-value, just a ptr to the object in the hash table
             return result;
         }
     }
@@ -152,12 +186,13 @@ HashTable_SearchResult<T, U> HashTable_SeperateChaining<T, U>::find(const T& key
 template <class T, class U>
 void HashTable_SeperateChaining<T, U>::insert(const T& key, const U& val)
 {
-    unsigned int ind = (*this->m_hashFunctionPtr)(key);
-    std::cout << ind << std::endl;
-    KeyValPair<T, U> kvp; // copies the key and value
+    unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
+    std::cout << "Insertion : Key " << key << " maps onto index " << hashedKey << "\t";
+    std::cout << "Dynamic array @ index " << hashedKey << " has " << this->m_data[hashedKey].length() << " existing entry/entries" << std::endl;
+    KeyValPair<T, U> kvp; // copies the key and value into new key-value pair object
     kvp.m_key = key;
     kvp.m_val = val;
-    this->m_data[ind].append(kvp); // copies the key-value pair object
+    this->m_data[hashedKey].append(kvp); // copies the key-value pair object into the array
     this->m_numEntries++;
 }
 
@@ -171,6 +206,7 @@ bool HashTable_SeperateChaining<T, U>::remove(const T& key)
         return false; // object not found inside hash table
     }
     this->m_data[result.m_hashedKey].remove(result.m_sepChainInd);
+    std::cout << "Removal : Key " << key << " and value pair removed from dynamic array @ index " << result.m_hashedKey << std::endl;
     this->m_numEntries--;
 }
 
@@ -183,43 +219,47 @@ class HashTable_OpenAddressing : public HashTable<T, U>
 private:
     ProbeFunctor* m_probeFunctionPtr;
     KeyValPair<T, U>** m_data; // array of pointers to key-val pairs
+    double m_maxLoadFactor;
 public:
     HashTable_OpenAddressing() = delete;
-    HashTable_OpenAddressing(const unsigned int& length, HashFunctor<T>* hashFunctionPtr, ProbeFunctor* probeFunctionPtr);
+    HashTable_OpenAddressing(const unsigned int& length, HashFunctor<T>* hashFunctionPtr, ProbeFunctor* probeFunctionPtr, const double& maxLoadFactor);
     ~HashTable_OpenAddressing();
-    HashTable_SearchResult<T, U>* find(const T& key);
+    HashTable_SearchResult<T, U> find(const T& key);
     void insert(const T& key, const U& val);
     bool remove(const T& key);
 };
 
 /* ctor */
 template <class T, class U>
-HashTable_OpenAddressing<T, U>::HashTable_OpenAddressing(const unsigned int& length, HashFunctor<T>* hashFunctionPtr, ProbeFunctor* probeFunctionPtr)
+HashTable_OpenAddressing<T, U>::HashTable_OpenAddressing(const unsigned int& length, HashFunctor<T>* hashFunctionPtr, ProbeFunctor* probeFunctionPtr, const double& maxLoadFactor)
 {
+    assert(length % 2 == 0); // array length must be even, to ensure probing function gcd = 1
     this->m_arrLength = length;
-    this->m_data = new KeyValPair<T, U>*[length];
+    this->m_data = new KeyValPair<T, U>*[length]; // allocate key value pairs on the heap - this is so they can be deleted when removed
     this->m_hashFunctionPtr = hashFunctionPtr;
     this->m_probeFunctionPtr = probeFunctionPtr;
+    this->m_numEntries = 0;
+    this->m_maxLoadFactor = maxLoadFactor;
 }
 
 /* dtor */
 template <class T, class U>
 HashTable_OpenAddressing<T, U>::~HashTable_OpenAddressing()
 {
-
+    delete[] this->m_data;
 }
 
 /* returns the pointer to a key value pair given key */
 template <class T, class U>
-HashTable_SearchResult<T, U>* HashTable_OpenAddressing<T, U>::find(const T& key)
+HashTable_SearchResult<T, U> HashTable_OpenAddressing<T, U>::find(const T& key)
 {  
-    unsigned int ind = (*this->m_hashFunctionPtr)(key);
-    if (this->m_data[ind]->m_key == key)
+    unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
+    if (this->m_data[hashedKey]->m_key == key)
     {
         // found
         HashTable_SearchResult<T, U> result;
-        result.m_hashedKey = ind;
-        result.m_kvpPtr = this->m_data[ind];
+        result.m_hashedKey = hashedKey;
+        result.m_kvpPtr = this->m_data[hashedKey];
         return result;
     }
     // not found
@@ -232,14 +272,28 @@ HashTable_SearchResult<T, U>* HashTable_OpenAddressing<T, U>::find(const T& key)
 template <class T, class U>
 void HashTable_OpenAddressing<T, U>::insert(const T& key, const U& val)
 {
-    unsigned int ind = (*this->m_hashFunctionPtr)(key);
+    // calculate projected load factor to check if array size must increase
+    double projLoadFactor = (double) (this->m_numEntries + 1) / (double) (this->m_arrLength);
+    std::cout << "Projected load factor: " << projLoadFactor << std::endl;
+    if (projLoadFactor > this->m_maxLoadFactor)
+    {
+        this->m_arrLength *= 2;
+        std::cout << "Array size must increase to: " << this->m_arrLength << std::endl;
+    }
+
+    unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
+    std::cout << "Insertion : Key " << key << " maps onto index " << hashedKey << std::endl;
     KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>; // copies the key and value
     kvpPtr->m_key = key;
     kvpPtr->m_val = val;
-    if (this->m_data[ind] != nullptr)
+    this->m_probeFunctionPtr->reset(); // reset probe function ptr to base value
+    unsigned int ind = hashedKey;
+    while (this->m_data[ind] != nullptr)
     {
-        std::cout << "Hash collision - require probing sequence" << std::endl;
+        std::cout << "\t Hash collision @ index " << ind << std::endl;
+        ind = (hashedKey + this->m_probeFunctionPtr->increment(this->m_arrLength)) % this->m_arrLength;
     }
+    std::cout << "\t Final index: " << ind << std::endl;
     this->m_data[ind] = kvpPtr;
     this->m_numEntries++;
 }
@@ -254,6 +308,7 @@ bool HashTable_OpenAddressing<T, U>::remove(const T& key)
         return false; // object not found inside hash table
     }
     delete result.m_kvpPtr;
+    std::cout << "Removal : Key " << key << " and value pair removed from dynamic array @ index " << result.m_hashedKey << std::endl;
     this->m_numEntries--;
 }
 
