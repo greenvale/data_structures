@@ -104,7 +104,7 @@ public:
     HashTable_SeperateChaining() = delete;
     HashTable_SeperateChaining(const unsigned int& length, HashFunctor<T>* hashFunctionPtr);
     ~HashTable_SeperateChaining();
-    HashTable_SearchResult<T, U>* find(const T& key);
+    HashTable_SearchResult<T, U> find(const T& key);
     void insert(const T& key, const U& val);
     bool remove(const T& key);
 };
@@ -122,12 +122,12 @@ HashTable_SeperateChaining<T, U>::HashTable_SeperateChaining(const unsigned int&
 template <class T, class U>
 HashTable_SeperateChaining<T, U>::~HashTable_SeperateChaining()
 {
-
+    delete[] this->m_data;
 }
 
 /* returns the pointer to a key value pair given key */
 template <class T, class U>
-HashTable_SearchResult<T, U>* HashTable_SeperateChaining<T, U>::find(const T& key)
+HashTable_SearchResult<T, U> HashTable_SeperateChaining<T, U>::find(const T& key)
 {  
     unsigned int ind = (*this->m_hashFunctionPtr)(key);
     for (unsigned int i = 0; i < this->m_data[ind].length(); ++i)
@@ -138,7 +138,7 @@ HashTable_SearchResult<T, U>* HashTable_SeperateChaining<T, U>::find(const T& ke
             HashTable_SearchResult<T, U> result;
             result.m_hashedKey = ind;
             result.m_sepChainInd = i;
-            result.m_kvpPtr = &this->m_data[ind].get(i);
+            result.m_kvpPtr = this->m_data[ind].getPtr(i);
             return result;
         }
     }
@@ -157,10 +157,6 @@ void HashTable_SeperateChaining<T, U>::insert(const T& key, const U& val)
     KeyValPair<T, U> kvp; // copies the key and value
     kvp.m_key = key;
     kvp.m_val = val;
-    /* if (this->m_data[ind].length() > 0)
-    {
-        std::cout << "Hash collision" << std::endl;
-    }*/
     this->m_data[ind].append(kvp); // copies the key-value pair object
     this->m_numEntries++;
 }
