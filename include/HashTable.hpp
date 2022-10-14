@@ -72,7 +72,7 @@ public:
     LinearProbeFunctor(const unsigned int& a, const unsigned int& b)
     {
         assert(a > 0);
-        assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
+        //assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
         this->m_a = a;
         this->m_b = b;
     }
@@ -82,7 +82,7 @@ public:
     }
     unsigned int increment(const unsigned int& arrLength)
     {
-        assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
+        //assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
         this->m_x += 1;
         return m_a*this->m_x + m_b;
     }
@@ -98,12 +98,13 @@ private:
     unsigned int m_c;
 public:
     //LinearProbeFunctor() = delete;
-    LinearProbeFunctor(const unsigned int& a, const unsigned int& b)
+    QuadraticProbeFunctor(const unsigned int& a, const unsigned int& b, const unsigned int& c)
     {
-        assert(a > 0);
-        assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
+        //assert(a > 0);
+        //assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
         this->m_a = a;
         this->m_b = b;
+        this->m_c = c;
     }
     void reset()
     {
@@ -111,11 +112,11 @@ public:
     }
     unsigned int increment(const unsigned int& arrLength)
     {
-        assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
+        //assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
         this->m_x += 1;
-        return m_a*this->m_x + m_b;
+        return m_a*this->m_x*this->m_x + m_b*this->m_x + this->m_c;
     }
-}
+};
 
 /********************************************************************************************************************/
 /* KEY-VALUE PAIR CLASS */
@@ -130,6 +131,7 @@ class KeyValPair
 public:
     T m_key;
     U m_val;
+    bool m_tombstone = false;
     KeyValPair() {}
     KeyValPair(const T& key, const U& val)
     {
@@ -283,7 +285,7 @@ template <class T, class U, class V>
 HashTable_SearchResult<T, U> HashTable_SeperateChaining<T, U, V>::find(const T& key) const
 {  
     unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
-    for (unsigned int i = 0; i < this->m_dataStructInterfacePtr->length(this->m_data[hashedKey]); ++i)
+    for (unsigned int i = 0; i < this->m_dataStructInterfacePtr->length(this->m_data[hashedKey]); ++i) // traverse chain
     {
         if (this->m_dataStructInterfacePtr->get(this->m_data[hashedKey], i)->m_key == key)
         {
@@ -372,7 +374,7 @@ public:
 template <class T, class U>
 HashTable_OpenAddressing<T, U>::HashTable_OpenAddressing(const unsigned int& length, HashFunctor<T>* hashFunctionPtr, ProbeFunctor* probeFunctionPtr, const double& maxLoadFactor)
 {
-    assert(length % 2 == 0); // array length must be even, to ensure probing function gcd = 1
+    //assert(length % 2 == 0); // array length must be even, to ensure probing function gcd = 1
     this->m_arrLength = length;
     this->m_data = new KeyValPair<T, U>*[length]; // allocate key value pairs on the heap - this is so they can be deleted when removed
     this->m_hashFunctionPtr = hashFunctionPtr;
@@ -393,13 +395,41 @@ template <class T, class U>
 HashTable_SearchResult<T, U> HashTable_OpenAddressing<T, U>::find(const T& key) const
 {  
     unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
-    if (this->m_data[hashedKey]->m_key == key)
+    unsigned int ind = hashedKey;
+    KeyValPair<T, U>* tombstonePtr = nullptr;
+    this->m_probeFunctionPtr->reset(); // reset probe function ptr to base value
+    while (this->m_data[ind] != nullptr)
     {
-        // found
-        HashTable_SearchResult<T, U> result;
-        result.m_hashedKey = hashedKey;
-        result.m_kvpPtr = this->m_data[hashedKey];
-        return result;
+        if ((this->m_data[ind]->m_key == key) && (this->m_data[ind]->m_tombstone == false)) // if key matches and the key-value pair hasn't been marked with tombstone
+        {
+            // found
+            HashTable_SearchResult<T, U> result;
+            result.m_hashedKey = hashedKey;
+            if (tombstonePtr != nullptr) // if relevent tombstone was encountered in probing, transfer data to this and delete the original key-value pair
+            {
+                tombstonePtr->m_key = key; 
+                tombstonePtr->m_val = this->m_data[ind]->m_val;
+                tombstonePtr->m_tombstone = false;
+                result.m_kvpPtr = tombstonePtr;
+                delete this->m_data[ind]; // delete original
+                this->m_data[ind] = nullptr;
+                std::cout << "Found key " << key << " and moved from index " << ind << std::endl;
+            }
+            else
+            {
+                result.m_kvpPtr = this->m_data[ind];
+                std::cout << "Found key" << std::endl;
+            }
+            return result;
+        }
+        else
+        {
+            if ((this->m_data[ind]->m_tombstone == true) && (tombstonePtr == nullptr))
+            {
+                tombstonePtr = this->m_data[ind]; // keep track of first tombstone to move value to this...
+            }
+            ind = (hashedKey + this->m_probeFunctionPtr->increment(this->m_arrLength)) % this->m_arrLength; // increment probing sequence
+        }
     }
     // not found
     HashTable_SearchResult<T, U> result;
@@ -420,19 +450,29 @@ void HashTable_OpenAddressing<T, U>::insert(const T& key, const U& val)
         this->resizeArray(this->m_arrLength * 2);
     }
 
+    // proceed with inserting the new key-value pair by hashing key and probing if necessary
     unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
     std::cout << "Insertion (" << this->m_numEntries << ") : Key " << key << " maps onto index " << hashedKey << std::endl;
-    KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>(key, val); // copies the key and value
-    this->m_probeFunctionPtr->reset(); // reset probe function ptr to base value
     unsigned int ind = hashedKey;
-    while (this->m_data[ind] != nullptr)
+    this->m_probeFunctionPtr->reset(); // reset probe function ptr to base value
+    while ((this->m_data[ind] != nullptr) && (this->m_data[ind]->m_tombstone == false)) // either empty bucket or entry marked with tombstone
     {
         std::cout << "\t Hash collision @ index " << ind << std::endl;
         ind = (hashedKey + this->m_probeFunctionPtr->increment(this->m_arrLength)) % this->m_arrLength;
     }
     std::cout << "\t Final index: " << ind << std::endl;
-    this->m_data[ind] = kvpPtr;
-    this->m_numEntries++;
+    if ((this->m_data[ind] == nullptr)) // empty bucket
+    {
+        KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>(key, val); // copies the key and value
+        this->m_data[ind] = kvpPtr;
+        this->m_numEntries++;
+    }
+    else // replacing tombstone-marked entry
+    {
+        this->m_data[ind]->m_key = key;
+        this->m_data[ind]->m_val = val;
+        this->m_data[ind]->m_tombstone = false;
+    }    
 }
 
 /* remove entry from hash table by key */
@@ -444,9 +484,10 @@ bool HashTable_OpenAddressing<T, U>::remove(const T& key)
     {
         return false; // object not found inside hash table
     }
-    delete result.m_kvpPtr;
-    std::cout << "Removal : Key " << key << " and value pair removed from dynamic array @ index " << result.m_hashedKey << std::endl;
-    this->m_numEntries--;
+    result.m_kvpPtr->m_tombstone = true; // mark as tombstone
+    std::cout << "Removal : Key " << key << " and value pair removed from dynamic array @ index " << result.m_hashedKey << ", now marked as tombstone" << std::endl;
+    //this->m_numEntries--;
+    return true;
 }
 
 /* display 
@@ -461,7 +502,14 @@ void HashTable_OpenAddressing<T, U>::display()
         std::cout << "Index (" << i << ") \t |";
         if (this->m_data[i] != nullptr)
         {
-            std::cout << "\t Key: " << this->m_data[i]->m_key << " -> Value: " << this->m_data[i]->m_val << std::endl;
+            if (this->m_data[i]->m_tombstone == false)
+            {
+                std::cout << "\t Key: " << this->m_data[i]->m_key << " -> Value: " << this->m_data[i]->m_val << std::endl;
+            }
+            else
+            {
+                std::cout << "\t Tombstone" << std::endl;
+            }
         }
         else
         {
@@ -483,7 +531,7 @@ void HashTable_OpenAddressing<T, U>::resizeArray(const unsigned int& newLength)
     DynamicArray<KeyValPair<T, U>*> tmp; // make a copy of the key-value pairs in a new array
     for (unsigned int i = 0; i < this->m_arrLength; ++i)
     {
-        if (this->m_data[i] != nullptr)
+        if ((this->m_data[i] != nullptr) && (this->m_data[i]->m_tombstone == false)) // check key-value pair exists and isn't marked with tombstone
         {
             KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>(this->m_data[i]->m_key, this->m_data[i]->m_val);
             tmp.append(kvpPtr);
