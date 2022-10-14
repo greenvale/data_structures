@@ -18,9 +18,10 @@ int main()
     datastructlib::LinearProbeFunctor probeFunc(3, 0);
     
     //datastructlib::HashTable_DynamicArrayInterface<unsigned int, std::string> interface;
-    datastructlib::HashTable_SinglyLinkedListInterface<unsigned int, std::string> interface;
+    //datastructlib::HashTable_SinglyLinkedListInterface<unsigned int, std::string> interface;
 
-    datastructlib::HashTable_SeperateChaining< unsigned int, std::string, datastructlib::SinglyLinkedList< datastructlib::KeyValPair< unsigned int, std::string >* > > ht(10, &interface, &hashFunc);
+    //datastructlib::HashTable_SeperateChaining< unsigned int, std::string, datastructlib::SinglyLinkedList< datastructlib::KeyValPair< unsigned int, std::string >* > > ht(10, &interface, &hashFunc);
+    datastructlib::HashTable_OpenAddressing<unsigned int, std::string> ht(10, &hashFunc, &probeFunc, 0.5);
 
     ht.insert(25, "Maths");
     ht.insert(41, "Chemistry");

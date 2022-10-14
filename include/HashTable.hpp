@@ -71,6 +71,7 @@ public:
     //LinearProbeFunctor() = delete;
     LinearProbeFunctor(const unsigned int& a, const unsigned int& b)
     {
+        assert(a > 0);
         assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
         this->m_a = a;
         this->m_b = b;
@@ -86,6 +87,35 @@ public:
         return m_a*this->m_x + m_b;
     }
 };
+
+/* Quadratic probing function */
+class QuadraticProbeFunctor : public ProbeFunctor
+{
+private:
+    unsigned int m_x;
+    unsigned int m_a;
+    unsigned int m_b;
+    unsigned int m_c;
+public:
+    //LinearProbeFunctor() = delete;
+    LinearProbeFunctor(const unsigned int& a, const unsigned int& b)
+    {
+        assert(a > 0);
+        assert(a % 2 != 0); // a must not be even - this is because array length in hash table will always be even
+        this->m_a = a;
+        this->m_b = b;
+    }
+    void reset()
+    {
+        this->m_x = 0;
+    }
+    unsigned int increment(const unsigned int& arrLength)
+    {
+        assert(arrLength % m_a != 0); // ensure that a and array size are relatively prime
+        this->m_x += 1;
+        return m_a*this->m_x + m_b;
+    }
+}
 
 /********************************************************************************************************************/
 /* KEY-VALUE PAIR CLASS */
@@ -334,6 +364,8 @@ public:
     HashTable_SearchResult<T, U> find(const T& key) const;
     void insert(const T& key, const U& val);
     bool remove(const T& key);
+    void display();
+    void resizeArray(const unsigned int& newLength); 
 };
 
 /* ctor */
@@ -384,12 +416,12 @@ void HashTable_OpenAddressing<T, U>::insert(const T& key, const U& val)
     std::cout << "Projected load factor: " << projLoadFactor << std::endl;
     if (projLoadFactor > this->m_maxLoadFactor)
     {
-        this->m_arrLength *= 2;
-        std::cout << "Array size must increase to: " << this->m_arrLength << std::endl;
+        std::cout << "Array size must increase to: " << 2 * this->m_arrLength << std::endl;
+        this->resizeArray(this->m_arrLength * 2);
     }
 
     unsigned int hashedKey = (*this->m_hashFunctionPtr)(key, this->m_arrLength);
-    std::cout << "Insertion : Key " << key << " maps onto index " << hashedKey << std::endl;
+    std::cout << "Insertion (" << this->m_numEntries << ") : Key " << key << " maps onto index " << hashedKey << std::endl;
     KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>(key, val); // copies the key and value
     this->m_probeFunctionPtr->reset(); // reset probe function ptr to base value
     unsigned int ind = hashedKey;
@@ -415,6 +447,61 @@ bool HashTable_OpenAddressing<T, U>::remove(const T& key)
     delete result.m_kvpPtr;
     std::cout << "Removal : Key " << key << " and value pair removed from dynamic array @ index " << result.m_hashedKey << std::endl;
     this->m_numEntries--;
+}
+
+/* display 
+    - note the value datatype must be defined for ostream operator
+*/
+template <class T, class U>
+void HashTable_OpenAddressing<T, U>::display()
+{
+    std::cout << "======================" << std::endl;
+    for (unsigned int i = 0; i < this->m_arrLength; ++i)
+    {
+        std::cout << "Index (" << i << ") \t |";
+        if (this->m_data[i] != nullptr)
+        {
+            std::cout << "\t Key: " << this->m_data[i]->m_key << " -> Value: " << this->m_data[i]->m_val << std::endl;
+        }
+        else
+        {
+            //std::cout << "\t NULLPTR" << std::endl;
+            std::cout << std::endl;
+        }
+    }
+    std::cout << "======================" << std::endl;
+}
+
+/* resize array
+- adjust the array to new size - new size cannot be smaller than existing number of entries
+*/
+template <class T, class U>
+void HashTable_OpenAddressing<T, U>::resizeArray(const unsigned int& newLength)
+{
+    // make copy of existing data and clear array
+    assert(newLength >= this->m_numEntries);
+    DynamicArray<KeyValPair<T, U>*> tmp; // make a copy of the key-value pairs in a new array
+    for (unsigned int i = 0; i < this->m_arrLength; ++i)
+    {
+        if (this->m_data[i] != nullptr)
+        {
+            KeyValPair<T, U>* kvpPtr = new KeyValPair<T, U>(this->m_data[i]->m_key, this->m_data[i]->m_val);
+            tmp.append(kvpPtr);
+            delete this->m_data[i];
+            this->m_data[i] = nullptr;
+        }
+    }
+    delete[] this->m_data;
+
+    // repopulate array with data from copy
+    this->m_arrLength = newLength;
+    this->m_data = new KeyValPair<T, U>*[this->m_arrLength]; // create array of pointers with the new size
+    this->m_numEntries = 0;
+    for (unsigned int i = 0; i < tmp.length(); ++i)
+    {
+        this->insert(tmp.get(i)->m_key, tmp.get(i)->m_val);
+        delete tmp.get(i);
+    }
 }
 
 }; // namespace datastructlib
