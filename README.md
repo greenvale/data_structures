@@ -33,9 +33,16 @@ g++ testing/dynamic_array.cpp -I ./
 
 A binary tree satisfies: each parent has at most two children. A binary search tree (BST) is a binary tree that satisfies the BST invariant. A binary tree satsifies the BST invariant if for every node the left subtree has smaller elements than that node and the right subtree has larger elements than that node. A BST is designed for containing orderable elements that can be searched through efficiently. The time complexity on average for insertion, deletion, removal and search is $\mathcal{O}(\log(n))$ on average but $\mathcal{O}(n)$ in the degenerate case without balancing.
 
+To test the Binary search tree implementation, build and run:
 
+```
+g++ testing/bst.cpp -I ./
+./a.out
+```
 
 ## Binary Heap
+
+A binary heap is a binary tree that keeps the smallest or largest value at the top. It is fully balanced, meaning nodes really have one child unless they are in the second-to-last layer. Elements fill left to right on the bottom layer of the tree. When inserting a new element, the `swim` operation is performed which allows this element to climb up based on its value to satisfy the heap property. Similarly the `sink` operation occurs when a value is removed and replaced with another value in the tree, which might not be in the right position.
 
 To test the Binary Heap implementation build the test file and run:
 
